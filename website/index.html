@@ -1,45 +1,50 @@
-<div class="worlds-grid"> <button onclick="alert('Клик работает')">
-    Тест клика
-</button>
+<div class="worlds-grid">
 
-    <a href="website/worlds/rainy-library.html" class="world-card" target="_blank">
+    <div class="world-card" onclick="openWorld('rainy-library.html')">
         <img src="images/rainylibrary.jpg" alt="Rainy Library">
         <div class="world-info">
             <h3>Rainy Library</h3>
             <p>Free</p>
         </div>
-    </a>
+    </div>
 
-    <a href="website/worlds/ocean-view.html" class="world-card" target="_blank">
+    <div class="world-card" onclick="openWorld('ocean-view.html')">
         <img src="images/oceanview.jpg" alt="Ocean View">
         <div class="world-info">
             <h3>Ocean View</h3>
             <p>Free</p>
         </div>
-    </a>
+    </div>
 
-    <a href="website/worlds/tokyo-night.html" class="world-card" target="_blank">
+    <div class="world-card" onclick="openWorld('tokyo-night.html')">
         <img src="images/tokionight.jpg" alt="Tokyo Night">
         <div class="world-info">
             <h3>Tokyo Night</h3>
             <p>Free</p>
         </div>
-    </a>
+    </div>
 
-    <a href="website/worlds/spacestation.html" class="world-card premium" target="_blank">
+    <div class="world-card premium" onclick="openWorld('spacestation.html')">
         <img src="images/spacestation.jpg" alt="Space Station">
         <div class="world-info">
             <h3>Space Station</h3>
             <p>Premium</p>
         </div>
-    </a>
+    </div>
 
-    <a href="website/worlds/sakura-garden.html" class="world-card premium" target="_blank">
+    <div class="world-card premium" onclick="openWorld('sakura-garden.html')">
         <img src="images/sakuragarden.jpg" alt="Sakura Garden">
         <div class="world-info">
             <h3>Sakura Garden</h3>
             <p>Premium</p>
         </div>
-    </a>
+    </div>
 
 </div>
+
+<script>
+function openWorld(worldFile) {
+    // Открываем страницу мира через window.open, чтобы Telegram Web App разрешил
+    window.open('worlds/' + worldFile, '_blank');
+}
+</script>
