@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Dream College Dorm</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../style.css">
+
+<style>
+
+body {
+    margin: 0;
+    overflow: hidden;
+}
+
+.world-page {
+    width: 100vw;
+    height: 100vh;
+
+    background-image: url('../images/dream-dorm.png');
+    background-size: cover;
+    background-position: center;
+
+    position: relative;
+}
+
+.world-page::before {
+    content: '';
+
+    position: absolute;
+    inset: 0;
+
+    background:
+    linear-gradient(
+        rgba(0,0,0,0.25),
+        rgba(0,0,0,0.35)
+    );
+}
+
+.top-bar {
+    position: absolute;
+    top: 24px;
+    left: 24px;
+    right: 24px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    z-index: 10;
+}
+
+.back-btn {
+    color: white;
+    text-decoration: none;
+
+    backdrop-filter: blur(10px);
+
+    background: rgba(255,255,255,0.12);
+
+    padding: 12px 18px;
+
+    border-radius: 20px;
+
+    font-family: Inter, sans-serif;
+}
+
+.stats {
+    display: flex;
+    gap: 12px;
+}
+
+.stat {
+    background: rgba(255,255,255,0.12);
+
+    backdrop-filter: blur(12px);
+
+    color: white;
+
+    padding: 12px 18px;
+
+    border-radius: 20px;
+
+    font-family: Inter, sans-serif;
+}
+
+.center-content {
+    position: absolute;
+
+    inset: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+
+    z-index: 10;
+
+    color: white;
+}
+
+.world-title {
+    font-family: 'Cormorant Garamond', serif;
+
+    font-size: clamp(54px, 8vw, 96px);
+
+    margin-bottom: 12px;
+}
+
+.world-subtitle {
+    font-family: Inter, sans-serif;
+
+    font-size: 18px;
+
+    opacity: 0.95;
+
+    margin-bottom: 36px;
+}
+
+.focus-btn {
+    border: none;
+
+    padding: 18px 34px;
+
+    border-radius: 999px;
+
+    background: white;
+
+    color: #3d342d;
+
+    font-size: 16px;
+
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+}
+
+.focus-btn:hover {
+    transform: translateY(-3px);
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="world-page">
+
+    <div class="top-bar">
+
+        <a href="../index.html" class="back-btn">
+            ← Back
+        </a>
+
+        <div class="stats">
+
+            <div class="stat">
+                Level 1
+            </div>
+
+            <div class="stat">
+                0 Coins
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="center-content">
+
+        <h1 class="world-title">
+            Dream College Dorm
+        </h1>
+
+        <p class="world-subtitle">
+            Your campus journey begins here.
+        </p>
+
+        <button class="focus-btn">
+            Start Focus Session
+        </button>
+
+    </div>
+
+</div>
+
+</body>
+</html>

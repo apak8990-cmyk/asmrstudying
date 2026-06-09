@@ -2,116 +2,78 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+
     <title>ASMR Studying</title>
+
     <link rel="stylesheet" href="style.css">
-    <style>
-        body {
-            background: #f7efe8;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 30px;
-        }
 
-        .worlds-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-        .world-card {
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-            pointer-events: auto;
-        }
-
-        .world-card img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-        }
-
-        .world-info {
-            padding: 12px;
-        }
-
-        .world-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 18px 40px rgba(0,0,0,0.15);
-        }
-
-        .premium {
-            position: relative;
-        }
-
-        .premium::before {
-            content: "PREMIUM";
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: gold;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
-<h1>✨ Choose Your ASMR Study World</h1>
+<div class="hero">
+
+    <div class="logo">
+        ASMR STUDYING
+    </div>
+
+    <h1>
+        Build Your Dream Study Space
+    </h1>
+
+    <p class="subtitle">
+        Study, earn rewards, and transform your world into a place you'll never want to leave.
+    </p>
+
+</div>
 
 <div class="worlds-grid">
 
-    <div class="world-card" onclick="openWorld('rainy-library.html')">
-        <img src="images/rainylibrary.jpg" alt="Rainy Library">
-        <div class="world-info">
-            <h3>Rainy Library</h3>
-            <p>Free</p>
+    <div class="world-card" onclick="openWorld('dream-dorm.html')">
+
+        <img src="images/dreamdorm.jpg" alt="Dream College Dorm">
+
+        <div class="overlay">
+            <h3>Dream College Dorm</h3>
+            <p>Create the ultimate campus room.</p>
         </div>
+
     </div>
 
-    <div class="world-card" onclick="openWorld('ocean-view.html')">
-        <img src="images/oceanview.jpg" alt="Ocean View">
-        <div class="world-info">
-            <h3>Ocean View</h3>
-            <p>Free</p>
+    <div class="world-card" onclick="openWorld('mars-pod.html')">
+
+        <img src="images/marspod.jpg" alt="Mars Observation Pod">
+
+        <div class="overlay">
+            <h3>Mars Observation Pod</h3>
+            <p>Study among the stars.</p>
         </div>
+
     </div>
 
-    <div class="world-card" onclick="openWorld('tokyo-night.html')">
-        <img src="images/tokionight.jpg" alt="Tokyo Night">
-        <div class="world-info">
-            <h3>Tokyo Night</h3>
-            <p>Free</p>
-        </div>
-    </div>
+    <div class="world-card" onclick="openWorld('treehouse.html')">
 
-    <div class="world-card premium" onclick="openWorld('spacestation.html')">
-        <img src="images/spacestation.jpg" alt="Space Station">
-        <div class="world-info">
-            <h3>Space Station</h3>
-            <p>Premium</p>
-        </div>
-    </div>
+        <img src="images/treehouse.jpg" alt="Tree House Sanctuary">
 
-    <div class="world-card premium" onclick="openWorld('sakura-garden.html')">
-        <img src="images/sakuragarden.jpg" alt="Sakura Garden">
-        <div class="world-info">
-            <h3>Sakura Garden</h3>
-            <p>Premium</p>
+        <div class="overlay">
+            <h3>Tree House Sanctuary</h3>
+            <p>Your hidden forest retreat.</p>
         </div>
+
     </div>
 
 </div>
 
 <script>
+
 function openWorld(worldFile) {
     window.open('worlds/' + worldFile, '_blank');
 }
+
 </script>
 
 </body>
