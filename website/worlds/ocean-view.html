@@ -1,6 +1,170 @@
-<h1>🌊 Ocean View</h1>
-<p>Relax by the waves while studying.</p>
+<!DOCTYPE html>
 
-<audio controls loop>
-    <source src="../audio/ocean.mp3" type="audio/mpeg">
-</audio>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Ocean View</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    min-height:100vh;
+
+    background-image:
+    linear-gradient(
+        rgba(0,0,0,0.25),
+        rgba(0,0,0,0.25)
+    ),
+    url("../images/oceanview.jpg");
+
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    font-family:Arial, sans-serif;
+
+    padding:20px;
+}
+
+.container{
+
+    width:100%;
+    max-width:520px;
+
+    background:rgba(255,255,255,0.88);
+
+    backdrop-filter:blur(12px);
+
+    border-radius:32px;
+
+    padding:32px;
+
+    text-align:center;
+
+    box-shadow:0 15px 40px rgba(0,0,0,0.15);
+}
+
+h1{
+    color:#335C67;
+    margin-bottom:10px;
+}
+
+.subtitle{
+    color:#5F7C84;
+    margin-bottom:30px;
+}
+
+#timer{
+    font-size:64px;
+    font-weight:bold;
+    color:#335C67;
+    margin-bottom:25px;
+}
+
+#startBtn{
+
+    background:#CDE8F1;
+
+    border:none;
+
+    border-radius:18px;
+
+    padding:14px 28px;
+
+    cursor:pointer;
+
+    font-size:16px;
+}
+
+.sounds{
+
+    margin-top:30px;
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:12px;
+}
+
+.sound-btn{
+
+    border:none;
+
+    border-radius:14px;
+
+    padding:14px;
+
+    background:#EAF6FA;
+
+    cursor:pointer;
+}
+
+.back{
+
+    display:inline-block;
+
+    margin-top:30px;
+
+    text-decoration:none;
+
+    color:#335C67;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+```
+<h1>🌊 Ocean View</h1>
+
+<p class="subtitle">
+    Study beside the ocean and let the waves clear your mind.
+</p>
+
+<div id="timer">25:00</div>
+
+<button id="startBtn">
+    Start
+</button>
+
+<div class="sounds">
+
+    <button class="sound-btn">🌊 Waves</button>
+
+    <button class="sound-btn">💨 Sea Wind</button>
+
+    <button class="sound-btn">🕊 Seagulls</button>
+
+    <button class="sound-btn">⚓ Harbor</button>
+
+</div>
+
+<a href="../index.html" class="back">
+    ← Back to Worlds
+</a>
+```
+
+</div>
+
+<script src="../script.js"></script>
+
+</body>
+</html>

@@ -1,13 +1,170 @@
 <!DOCTYPE html>
-<html>
+
+<html lang="en">
 <head>
-    <title>Rainy Library</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Rainy Library</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    min-height:100vh;
+
+    background-image:
+    linear-gradient(
+        rgba(0,0,0,0.35),
+        rgba(0,0,0,0.35)
+    ),
+    url("../images/rainylibrary.jpg");
+
+    background-size:cover;
+    background-position:center;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    font-family:Arial, sans-serif;
+}
+
+.container{
+
+    width:90%;
+    max-width:500px;
+
+    background:rgba(255,255,255,0.88);
+
+    backdrop-filter:blur(12px);
+
+    border-radius:30px;
+
+    padding:30px;
+
+    text-align:center;
+}
+
+h1{
+    color:#4b3e37;
+    margin-bottom:10px;
+}
+
+.subtitle{
+    color:#7a6d65;
+    margin-bottom:25px;
+}
+
+#timer{
+    font-size:60px;
+    font-weight:bold;
+    color:#5c4c44;
+    margin-bottom:20px;
+}
+
+#startBtn{
+
+    background:#e8d5ca;
+
+    border:none;
+
+    padding:14px 28px;
+
+    border-radius:16px;
+
+    cursor:pointer;
+}
+
+.sounds{
+
+    margin-top:30px;
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:12px;
+}
+
+.sound-btn{
+
+    border:none;
+
+    padding:12px;
+
+    border-radius:14px;
+
+    background:#f4e7df;
+
+    cursor:pointer;
+}
+
+.back{
+
+    display:inline-block;
+
+    margin-top:25px;
+
+    text-decoration:none;
+
+    color:#555;
+}
+
+</style>
+
 </head>
 <body>
 
-<h1>Rainy Library</h1>
+<div class="container">
 
-<p>Мир открыт успешно 🎉</p>
+```
+<h1>📚 Rainy Library</h1>
+
+<p class="subtitle">
+    A cozy corner for deep focus and gentle rain.
+</p>
+
+<div id="timer">25:00</div>
+
+<button id="startBtn">
+    Start
+</button>
+
+<div class="sounds">
+
+    <button class="sound-btn">
+        🌧 Rain
+    </button>
+
+    <button class="sound-btn">
+        ⛈ Thunder
+    </button>
+
+    <button class="sound-btn">
+        📖 Pages
+    </button>
+
+    <button class="sound-btn">
+        🔥 Fireplace
+    </button>
+
+</div>
+
+<a href="../index.html" class="back">
+    ← Back to Worlds
+</a>
+```
+
+</div>
+
+<script src="../script.js"></script>
 
 </body>
 </html>
