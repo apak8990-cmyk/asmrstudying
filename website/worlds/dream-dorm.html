@@ -163,7 +163,37 @@ body {
 .focus-btn:hover {
     transform: translateY(-3px);
 }
+.session-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 
+    width: 320px;
+}
+
+.session-card {
+    background: rgba(255,255,255,0.15);
+
+    backdrop-filter: blur(12px);
+
+    border-radius: 20px;
+
+    padding: 18px;
+
+    color: white;
+
+    font-family: Inter, sans-serif;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+}
+
+.session-card:hover {
+    transform: translateY(-3px);
+
+    background: rgba(255,255,255,0.22);
+}
 </style>
 
 </head>
@@ -204,15 +234,15 @@ body {
        <div class="session-list">
 
     <div class="session-card">
-        ☕ Morning Review
+         Morning Review
     </div>
 
     <div class="session-card">
-        📚 Library Session
+         Library Session
     </div>
 
     <div class="session-card">
-        🎓 Finals Preparation
+         Finals Preparation
     </div>
 
 </div>
