@@ -174,7 +174,8 @@ body {
 }
 
 .session-card {
-    background: rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.12);
 
     backdrop-filter: blur(18px);
 
@@ -192,11 +193,15 @@ body {
 }
 
 .session-card:hover {
-    transform: translateY(-3px);
+    transform: translateY(-4px) scale(1.02);
 
-    background: rgba(255,255,255,0.22);
+    background: rgba(255,255,255,0.18);
+
+    box-shadow:
+        0 12px 30px rgba(0,0,0,0.15);
 }
 .session-title {
+    letter-spacing: 0.2px;
     font-size: 18px;
     font-weight: 500;
 
