@@ -166,19 +166,19 @@ body {
 .session-list {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
 
-    width: 320px;
+    width: min(380px, 85vw);
 }
 
 .session-card {
-    background: rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.12);
 
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(18px);
 
-    border-radius: 20px;
+    border-radius: 28px;
 
-    padding: 18px;
+    padding: 20px 24px;
 
     color: white;
 
@@ -246,13 +246,17 @@ body {
        <div class="session-list">
 
     <div class="session-card">
-    <div class="session-title">
-        Morning Review
-    </div>
+   <div class="session-title">
+    Morning Review
+</div>
 
-    <div class="session-info">
-        25 min • +10 coins
-    </div>
+<div class="session-description">
+    A gentle start to your academic day.
+</div>
+
+<div class="session-info">
+    25 min • +10 coins
+</div>
 </div>
 
     <div class="session-card">
