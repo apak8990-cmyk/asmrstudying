@@ -344,8 +344,83 @@ body {
 
 <script>
 
+let selectedMinutes = 25;
+let timerInterval;
+
 function startSession(minutes) {
-    alert("Starting " + minutes + " minute session");
+
+    selectedMinutes = minutes;
+
+    document.getElementById("world-screen").style.display = "none";
+    document.getElementById("session-screen").style.display = "block";
+
+    const titles = {
+        25: "Morning Review",
+        50: "Library Session",
+        90: "Finals Preparation"
+    };
+
+    document.getElementById("session-title").innerText =
+        titles[minutes];
+
+    updateTimerDisplay(minutes * 60);
+}
+
+function beginTimer() {
+
+    let seconds = selectedMinutes * 60;
+
+    updateTimerDisplay(seconds);
+
+    timerInterval = setInterval(() => {
+
+        seconds--;
+
+        updateTimerDisplay(seconds);
+
+        if (seconds <= 0) {
+
+            clearInterval(timerInterval);
+
+            sessionComplete();
+        }
+
+    }, 1000);
+
+}
+
+function updateTimerDisplay(seconds) {
+
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+
+    document.getElementById("timer-display").innerText =
+        String(mins).padStart(2, "0") +
+        ":" +
+        String(secs).padStart(2, "0");
+}
+
+function leaveSession() {
+
+    clearInterval(timerInterval);
+
+    document.getElementById("session-screen").style.display = "none";
+    document.getElementById("world-screen").style.display = "block";
+}
+
+function sessionComplete() {
+
+    document.getElementById("session-screen").innerHTML = `
+
+        <h2>Session Complete</h2>
+
+        <p>Great work.</p>
+
+        <button onclick="location.reload()">
+            Continue
+        </button>
+
+    `;
 }
 
 </script>
