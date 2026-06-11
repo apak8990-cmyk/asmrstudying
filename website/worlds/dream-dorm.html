@@ -301,7 +301,7 @@ body {
 
     </div>
 
-    <div class="center-content">
+    <div class="center-content" id="world-content">
 
         <h1 class="world-title">
             Dream College Dorm
@@ -419,6 +419,7 @@ let timerInterval;
 function startSession(minutes) {
 
     selectedMinutes = minutes;
+    document.getElementById("world-content").style.display = "none";
 
     // document.getElementById("world-screen").style.display = "none";
     document.getElementById("session-screen").style.display = "block";
@@ -474,7 +475,8 @@ function leaveSession() {
     clearInterval(timerInterval);
 
     document.getElementById("session-screen").style.display = "none";
-    // document.getElementById("world-screen").style.display = "block";
+
+    document.getElementById("world-content").style.display = "flex";
 }
 
 function sessionComplete() {
