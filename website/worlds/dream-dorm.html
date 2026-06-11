@@ -213,6 +213,20 @@ body {
 
     opacity: 0.8;
 }
+.session-overlay {
+    position: fixed;
+    inset: 0;
+
+    background: rgba(0,0,0,0.45);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    backdrop-filter: blur(6px);
+
+    z-index: 100;
+}
 </style>
 
 </head>
@@ -257,8 +271,12 @@ body {
     <div class="session-title">
         Morning Review
     </div>
-    <div id="session-screen" style="display:none;">
 
+  <div id="session-screen"
+     class="session-overlay"
+     style="display:none;">
+
+    <div class="prep-card">
     <h2 id="session-title">
     Morning Review
 </h2>
@@ -291,9 +309,11 @@ body {
 
     </div>
 
-    <button class="focus-btn" onclick="beginTimer()">
-        Start Session
-    </button>
+   <button class="focus-btn" onclick="beginTimer()">
+    Start Session
+</button>
+
+    </div>
 
 </div>
 
