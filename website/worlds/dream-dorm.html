@@ -259,9 +259,9 @@ body {
     </div>
     <div id="session-screen" style="display:none;">
 
-    <h2 id="session-name">
-        Morning Review
-    </h2>
+    <h2 id="session-title">
+    Morning Review
+</h2>
 
     <div id="timer-display">
         25:00
@@ -351,7 +351,7 @@ function startSession(minutes) {
 
     selectedMinutes = minutes;
 
-    document.getElementById("world-screen").style.display = "none";
+    // document.getElementById("world-screen").style.display = "none";
     document.getElementById("session-screen").style.display = "block";
 
     const titles = {
@@ -405,7 +405,7 @@ function leaveSession() {
     clearInterval(timerInterval);
 
     document.getElementById("session-screen").style.display = "none";
-    document.getElementById("world-screen").style.display = "block";
+    // document.getElementById("world-screen").style.display = "block";
 }
 
 function sessionComplete() {
