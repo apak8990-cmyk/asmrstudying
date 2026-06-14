@@ -427,7 +427,7 @@ body {
 
        <div class="session-list">
 
-    <div class="session-card" onclick="startSession(25)">
+    <div class="session-card" onclick="startSession(1)">
 
     <div class="session-title">
         Morning Review
@@ -545,6 +545,7 @@ body {
 
 let selectedMinutes = 25;
 let timerInterval;
+let totalSeconds;
 
 function startSession(minutes) {
 
@@ -571,6 +572,8 @@ function beginTimer() { document.getElementById("session-screen").style.display 
 document.getElementById("room-timer").style.display = "block";
 
     let seconds = selectedMinutes * 60;
+
+totalSeconds = seconds;
 
     updateTimerDisplay(seconds);
 
@@ -608,6 +611,12 @@ function updateTimerDisplay(seconds) {
 
 document.getElementById("room-timer-text").innerText =
     roomTimerText;
+    const percent =
+    (seconds / totalSeconds) * 100;
+
+document.getElementById(
+    "room-progress-fill"
+).style.width = percent + "%";
 }
 
 function leaveSession() {
