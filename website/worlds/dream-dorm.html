@@ -566,7 +566,9 @@ function startSession(minutes) {
     updateTimerDisplay(minutes * 60);
 }
 
-function beginTimer() {
+function beginTimer() { document.getElementById("session-screen").style.display = "none";
+
+document.getElementById("room-timer").style.display = "block";
 
     let seconds = selectedMinutes * 60;
 
