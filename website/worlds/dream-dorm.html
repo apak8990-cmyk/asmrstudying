@@ -600,6 +600,14 @@ function updateTimerDisplay(seconds) {
         String(mins).padStart(2, "0") +
         ":" +
         String(secs).padStart(2, "0");
+        const roomTimerText =
+    String(mins).padStart(2, "0") +
+    ":" +
+    String(secs).padStart(2, "0") +
+    " remaining";
+
+document.getElementById("room-timer-text").innerText =
+    roomTimerText;
 }
 
 function leaveSession() {
