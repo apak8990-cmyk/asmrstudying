@@ -429,7 +429,7 @@ body {
 
        <div class="session-list">
 
-    <div class="session-card" onclick="startSession(25)">
+    <div class="session-card" onclick="startSession(1)">
 
     <div class="session-title">
         Morning Review
@@ -632,17 +632,19 @@ function leaveSession() {
 
 function sessionComplete() {
 
-    document.getElementById("session-screen").innerHTML = `
+   document.getElementById("session-screen").innerHTML = `
 
-        <h2>Session Complete</h2>
+    <h2>Session Complete</h2>
 
-        <p>Great work.</p>
+    <p>Great work.</p>
 
-        <button onclick="location.reload()">
-            Continue
-        </button>
+    <h3>+${selectedMinutes} Study Credits</h3>
 
-    `;
+    <button onclick="location.reload()">
+        Continue
+    </button>
+
+`;
 }
 
 </script>
