@@ -632,19 +632,27 @@ function leaveSession() {
 
 function sessionComplete() {
 
-   document.getElementById("session-screen").innerHTML = `
+    document.getElementById("room-timer").style.display = "none";
 
-    <h2>Session Complete</h2>
+    document.getElementById("session-screen").style.display = "flex";
 
-    <p>Great work.</p>
+    document.getElementById("session-screen").innerHTML = `
 
-    <h3>+${selectedMinutes} Study Credits</h3>
+        <div class="prep-card">
 
-    <button onclick="location.reload()">
-        Continue
-    </button>
+            <h2>Session Complete</h2>
 
-`;
+            <p>Great work.</p>
+
+            <h3>+${selectedMinutes} Study Credits</h3>
+
+            <button class="focus-btn" onclick="location.reload()">
+                Continue
+            </button>
+
+        </div>
+
+    `;
 }
 
 </script>
