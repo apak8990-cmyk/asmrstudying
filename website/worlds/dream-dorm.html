@@ -634,9 +634,12 @@ function leaveSession() {
 function sessionComplete() { 
     
     coins += selectedMinutes;
+
+    localStorage.setItem("dreamCoins", coins);
     
     document.getElementById("coins-display").innerText =
     coins + " Coins";
+    
     document.getElementById("room-timer").style.display = "none";
 
     document.getElementById("session-screen").style.display = "flex";
