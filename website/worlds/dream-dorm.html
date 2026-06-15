@@ -429,7 +429,7 @@ body {
 
        <div class="session-list">
 
-    <div class="session-card" onclick="startSession(25)">
+    <div class="session-card" onclick="startSession(0.5)">
 
     <div class="session-title">
         Morning Review
@@ -548,7 +548,7 @@ body {
 let selectedMinutes = 25;
 let timerInterval;
 let totalSeconds;
-let coins = 0;
+let coins = Number(localStorage.getItem("dreamCoins")) || 0;
 
 function startSession(minutes) {
 
@@ -639,7 +639,7 @@ function sessionComplete() {
     
     document.getElementById("coins-display").innerText =
     coins + " Coins";
-    
+
     document.getElementById("room-timer").style.display = "none";
 
     document.getElementById("session-screen").style.display = "flex";
