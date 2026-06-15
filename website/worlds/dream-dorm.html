@@ -409,9 +409,9 @@ body {
                 Level 1
             </div>
 
-            <div class="stat">
-                0 Coins
-            </div>
+            <div class="stat" id="coins-display">
+    0 Coins
+</div>
 
         </div>
 
@@ -548,6 +548,7 @@ body {
 let selectedMinutes = 25;
 let timerInterval;
 let totalSeconds;
+let coins = 0;
 
 function startSession(minutes) {
 
@@ -630,8 +631,12 @@ function leaveSession() {
     document.getElementById("world-content").style.display = "flex";
 }
 
-function sessionComplete() {
-
+function sessionComplete() { 
+    
+    coins += selectedMinutes;
+    
+    document.getElementById("coins-display").innerText =
+    coins + " Coins";
     document.getElementById("room-timer").style.display = "none";
 
     document.getElementById("session-screen").style.display = "flex";
