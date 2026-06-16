@@ -403,17 +403,21 @@ body {
        <a href="https://apak8990-cmyk.github.io/asmrstudying/website/" class="back-btn">
     ← Back
 </a>
-        <div class="stats">
+      <div class="stats">
 
-            <div class="stat">
-                Level 1
-            </div>
+    <div class="stat">
+        Level 1
+    </div>
 
-            <div class="stat" id="coins-display">
-    0 Coins
+    <div class="stat" id="coins-display">
+        0 Coins
+    </div>
+
+    <div class="stat" onclick="resetCoins()">
+        Reset
+    </div>
+
 </div>
-
-        </div>
 
     </div>
 
@@ -549,7 +553,15 @@ let selectedMinutes = 25;
 let timerInterval;
 let totalSeconds;
 let coins = Number(localStorage.getItem("dreamCoins")) || 0;
+
+
 console.log("LOAD COINS:", coins);
+window.onload = () => {
+
+    document.getElementById("coins-display").innerText =
+        coins + " Coins";
+
+};
 
 function startSession(minutes) {
 
@@ -664,6 +676,18 @@ function sessionComplete() {
         </div>
 
     `;
+}
+function resetCoins() {
+
+    localStorage.removeItem("dreamCoins");
+
+    coins = 0;
+
+    document.getElementById("coins-display").innerText =
+        "0 Coins";
+
+    console.log("COINS RESET");
+
 }
 
 </script>
