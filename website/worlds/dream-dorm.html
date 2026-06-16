@@ -413,9 +413,7 @@ body {
         0 Coins
     </div>
 
-    <div class="stat" onclick="resetCoins()">
-        Reset
-    </div>
+
 
 </div>
 
@@ -433,7 +431,7 @@ body {
 
        <div class="session-list">
 
-    <div class="session-card" onclick="startSession(0.5)">
+    <div class="session-card" onclick="startSession(25)">
 
     <div class="session-title">
         Morning Review
@@ -550,6 +548,11 @@ body {
 <script>
 
 let selectedMinutes = 25;
+const rewards = {
+    25: 10,
+    50: 25,
+    90: 50
+};
 let timerInterval;
 let totalSeconds;
 let coins = Number(localStorage.getItem("dreamCoins")) || 0;
@@ -646,7 +649,9 @@ function leaveSession() {
 
 function sessionComplete() { 
     
-    coins += selectedMinutes;
+const reward = rewards[selectedMinutes];
+
+coins += reward;
 
     localStorage.setItem("dreamCoins", coins);
 
@@ -667,7 +672,7 @@ function sessionComplete() {
 
             <p>Great work.</p>
 
-            <h3>+${selectedMinutes} Study Credits</h3>
+            <h3>+${reward} Coins</h3>
 
             <button class="focus-btn" onclick="location.reload()">
                 Continue
