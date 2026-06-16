@@ -549,6 +549,7 @@ let selectedMinutes = 25;
 let timerInterval;
 let totalSeconds;
 let coins = Number(localStorage.getItem("dreamCoins")) || 0;
+console.log("LOAD COINS:", coins);
 
 function startSession(minutes) {
 
@@ -636,6 +637,8 @@ function sessionComplete() {
     coins += selectedMinutes;
 
     localStorage.setItem("dreamCoins", coins);
+
+    console.log("SAVE COINS:", coins);
     
     document.getElementById("coins-display").innerText =
     coins + " Coins";
