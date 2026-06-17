@@ -584,16 +584,13 @@ window.onload = () => {
     document.getElementById("coins-display").innerText =
         coins + " Coins";
 
-    if (ownedBed) {
+    const bed =
+document.getElementById("room-bed");
 
-        const bed =
-        document.getElementById("room-bed");
+bed.src =
+"../images/furniture/bed-01.png";
 
-        bed.src = ownedBed;
-
-        bed.style.display = "block";
-
-    }
+bed.style.display = "block";
 
 };
 
