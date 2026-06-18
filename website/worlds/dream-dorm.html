@@ -584,14 +584,6 @@ window.onload = () => {
     document.getElementById("coins-display").innerText =
         coins + " Coins";
 
-    const bed =
-document.getElementById("room-bed");
-
-bed.src =
-"../images/furniture/bed-01.png";
-
-bed.style.display = "block";
-
 };
 
 function startSession(minutes) {
@@ -603,7 +595,7 @@ function startSession(minutes) {
     document.getElementById("session-screen").style.display = "flex";
 
     const titles = {
-        25: "Morning Review",
+        0.5: "Morning Review",
         50: "Library Session",
         90: "Finals Preparation"
     };
@@ -710,18 +702,7 @@ coins += reward;
 
     `;
 }
-function resetCoins() {
 
-    localStorage.removeItem("dreamCoins");
-
-    coins = 0;
-
-    document.getElementById("coins-display").innerText =
-        "0 Coins";
-
-    console.log("COINS RESET");
-
-}
 
 </script>
 </body>
