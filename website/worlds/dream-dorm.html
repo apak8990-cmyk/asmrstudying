@@ -18,6 +18,7 @@
 #room-bed {
 
     position: absolute;
+    display: block;
 
     width: 420px;
     max-height: 55vh;
@@ -29,6 +30,10 @@
     z-index: 5;
 
     object-fit: contain;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    image-rendering: auto;
 
     pointer-events: none;
 }
@@ -299,6 +304,83 @@ body {
 
     background: rgba(255,255,255,0.16);
 }
+
+.shop-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.shop-item {
+    overflow: hidden;
+    border: 2px solid transparent;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.08);
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.shop-item:hover,
+.shop-item.selected {
+    border-color: rgba(255,255,255,0.8);
+    background: rgba(255,255,255,0.16);
+}
+
+.shop-item.locked {
+    opacity: 0.45;
+    cursor: not-allowed;
+    filter: grayscale(1);
+}
+
+.shop-item-image {
+    display: block;
+    width: 100%;
+    height: 150px;
+    object-fit: contain;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    image-rendering: auto;
+}
+
+.shop-item-info {
+    padding: 12px;
+}
+
+.shop-item-name,
+.shop-item-price {
+    display: block;
+}
+
+.shop-item-name {
+    margin-bottom: 4px;
+    font-size: 15px;
+}
+
+.shop-item-price {
+    margin-bottom: 10px;
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+.shop-item-button {
+    width: 100%;
+    border: 0;
+    border-radius: 8px;
+    padding: 9px 10px;
+    background: white;
+    color: #3d342d;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.shop-item-button:disabled {
+    cursor: not-allowed;
+}
+
 @media (max-width: 768px) {
 
     .session-overlay {
@@ -584,6 +666,7 @@ const rewards = {
 let timerInterval;
 let totalSeconds;
 let coins = Number(localStorage.getItem("dreamCoins")) || 0;
+let selectedItemId = null;
 let ownedBed =
 localStorage.getItem("ownedBed") || null;
 
@@ -710,11 +793,19 @@ coins += reward;
     document.getElementById("coins-display").innerText =
     coins + " Coins";
 
+    openShop(reward);
+}
+
+function openShop(reward) {
+
+    const sessionScreen = document.getElementById("session-screen");
+
+    document.getElementById("world-content").style.display = "none";
     document.getElementById("room-timer").style.display = "none";
+    sessionScreen.style.display = "none";
+    selectedItemId = null;
 
-    document.getElementById("session-screen").style.display = "flex";
-
-    document.getElementById("session-screen").innerHTML = `
+    sessionScreen.innerHTML = `
 
         <div class="prep-card">
 
@@ -722,24 +813,48 @@ coins += reward;
 
             <h3>+${reward} Coins</h3>
 
-            <div class="atmosphere-list">
+            <div class="shop-grid">
                 ${coins >= 50 ? `
-                    <div class="atmosphere-option" onclick="purchaseBed('bed-01', 50)">
-                        Bed 01 — 50 Coins
+                    <div class="shop-item" data-item-id="bed-01" onclick="selectShopItem('bed-01')">
+                        <img class="shop-item-image" src="../images/furniture/bed-01.png" alt="Classic Oak Bed">
+                        <div class="shop-item-info">
+                            <strong class="shop-item-name">Classic Oak Bed</strong>
+                            <span class="shop-item-price">50 Coins</span>
+                            <button class="shop-item-button" onclick="event.stopPropagation(); selectShopItem('bed-01'); purchaseBed('bed-01', 50)">
+                                Buy
+                            </button>
+                        </div>
                     </div>
                 ` : `
-                    <div class="atmosphere-option" style="opacity:0.45; cursor:not-allowed;">
-                        Bed 01 — 50 Coins
+                    <div class="shop-item locked">
+                        <img class="shop-item-image" src="../images/furniture/bed-01.png" alt="Classic Oak Bed">
+                        <div class="shop-item-info">
+                            <strong class="shop-item-name">Classic Oak Bed</strong>
+                            <span class="shop-item-price">50 Coins</span>
+                            <button class="shop-item-button" disabled>Locked</button>
+                        </div>
                     </div>
                 `}
 
                 ${coins >= 100 ? `
-                    <div class="atmosphere-option" onclick="purchaseBed('bed-02', 100)">
-                        Bed 02 — 100 Coins
+                    <div class="shop-item" data-item-id="bed-02" onclick="selectShopItem('bed-02')">
+                        <img class="shop-item-image" src="../images/furniture/bed-02.png" alt="Autumn Linen Bed">
+                        <div class="shop-item-info">
+                            <strong class="shop-item-name">Autumn Linen Bed</strong>
+                            <span class="shop-item-price">100 Coins</span>
+                            <button class="shop-item-button" onclick="event.stopPropagation(); selectShopItem('bed-02'); purchaseBed('bed-02', 100)">
+                                Buy
+                            </button>
+                        </div>
                     </div>
                 ` : `
-                    <div class="atmosphere-option" style="opacity:0.45; cursor:not-allowed;">
-                        Bed 02 — 100 Coins
+                    <div class="shop-item locked">
+                        <img class="shop-item-image" src="../images/furniture/bed-02.png" alt="Autumn Linen Bed">
+                        <div class="shop-item-info">
+                            <strong class="shop-item-name">Autumn Linen Bed</strong>
+                            <span class="shop-item-price">100 Coins</span>
+                            <button class="shop-item-button" disabled>Locked</button>
+                        </div>
                     </div>
                 `}
             </div>
@@ -747,6 +862,17 @@ coins += reward;
         </div>
 
     `;
+
+    sessionScreen.style.display = "flex";
+}
+
+function selectShopItem(itemId) {
+
+    selectedItemId = itemId;
+
+    document.querySelectorAll(".shop-item[data-item-id]").forEach((item) => {
+        item.classList.toggle("selected", item.dataset.itemId === selectedItemId);
+    });
 }
 
 function purchaseBed(bed, price) {
