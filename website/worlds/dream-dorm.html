@@ -20,12 +20,15 @@
     position: absolute;
 
     width: 420px;
+    max-height: 55vh;
 
     bottom: 80px;
 
     left: 140px;
 
     z-index: 5;
+
+    object-fit: contain;
 
     pointer-events: none;
 }
@@ -328,6 +331,13 @@ body {
 .world-page {
     background-image: url('../images/dream-dorm-mobile.png');
 }
+
+#room-bed {
+    width: min(300px, 72vw);
+    left: 50%;
+    bottom: 48px;
+    transform: translateX(-50%);
+}
 }
 #room-timer {
 
@@ -577,6 +587,10 @@ let coins = Number(localStorage.getItem("dreamCoins")) || 0;
 let ownedBed =
 localStorage.getItem("ownedBed") || null;
 
+const bedImages = {
+    "bed-01": "../images/furniture/bed-01.png",
+    "bed-02": "../images/furniture/bed-02.png"
+};
 
 console.log("LOAD COINS:", coins);
 window.onload = () => {
@@ -584,7 +598,23 @@ window.onload = () => {
     document.getElementById("coins-display").innerText =
         coins + " Coins";
 
+    renderOwnedBed();
+
 };
+
+function renderOwnedBed() {
+
+    const bedImage = bedImages[ownedBed];
+    const roomBed = document.getElementById("room-bed");
+
+    if (!bedImage || !roomBed) {
+        return;
+    }
+
+    roomBed.src = bedImage;
+    roomBed.alt = ownedBed;
+    roomBed.style.display = "block";
+}
 
 function startSession(minutes) {
 
@@ -694,7 +724,7 @@ coins += reward;
 
             <div class="atmosphere-list">
                 ${coins >= 50 ? `
-                    <div class="atmosphere-option" onclick="purchaseBed('bed-01.png', 50)">
+                    <div class="atmosphere-option" onclick="purchaseBed('bed-01', 50)">
                         Bed 01 — 50 Coins
                     </div>
                 ` : `
@@ -704,7 +734,7 @@ coins += reward;
                 `}
 
                 ${coins >= 100 ? `
-                    <div class="atmosphere-option" onclick="purchaseBed('bed-02.png', 100)">
+                    <div class="atmosphere-option" onclick="purchaseBed('bed-02', 100)">
                         Bed 02 — 100 Coins
                     </div>
                 ` : `
