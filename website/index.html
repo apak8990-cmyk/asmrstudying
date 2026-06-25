@@ -2,79 +2,53 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f4efe8">
     <title>ASMR Studying</title>
-
-    <link rel="stylesheet" href="style.css">
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+    <header class="hero">
+        <p class="logo">ASMR Studying</p>
+        <h1>Choose your study world</h1>
+        <p class="subtitle">
+            Focus, earn coins, and make a quiet corner feel like your own.
+        </p>
+    </header>
 
-<div class="hero">
+    <main class="worlds-grid" aria-label="Study worlds">
+        <a class="world-card world-card--active" href="worlds/dream-dorm.html">
+            <img src="images/dream-dorm.png" alt="">
+            <span class="world-card__status">Open</span>
+            <span class="world-card__overlay">
+                <strong>Dream College Dorm</strong>
+                <span>Create the ultimate campus room.</span>
+            </span>
+        </a>
 
-    <div class="logo">
-        ASMR STUDYING
-    </div>
+        <article class="world-card world-card--locked" aria-disabled="true">
+            <img src="images/mars-observation-pod.png" alt="">
+            <span class="world-card__status">Coming soon</span>
+            <span class="world-card__overlay">
+                <strong>Mars Observation Pod</strong>
+                <span>Study among the stars.</span>
+            </span>
+        </article>
 
-    <h1>
-        Build Your Dream Study Space
-    </h1>
+        <article class="world-card world-card--locked" aria-disabled="true">
+            <img src="images/tree-house-sanctuary.png" alt="">
+            <span class="world-card__status">Coming soon</span>
+            <span class="world-card__overlay">
+                <strong>Tree House Sanctuary</strong>
+                <span>Your hidden forest retreat.</span>
+            </span>
+        </article>
+    </main>
 
-    <p class="subtitle">
-        Study, earn rewards, and transform your world into a place you'll never want to leave.
-    </p>
-
-</div>
-
-<div class="worlds-grid">
-
-    <div class="world-card" onclick="openWorld('dream-dorm.html')">
-
-        <img src="images/dream-dorm.png" alt="Dream College Dorm">
-
-        <div class="overlay">
-            <h3>Dream College Dorm</h3>
-            <p>Create the ultimate campus room.</p>
-        </div>
-
-    </div>
-
-    <div class="world-card" onclick="openWorld('mars-observation-pod.html')">
-
-        <img src="images/mars-observation-pod.png" alt="Mars Observation Pod">
-
-        <div class="overlay">
-            <h3>Mars Observation Pod</h3>
-            <p>Study among the stars.</p>
-        </div>
-
-    </div>
-
-    <div class="world-card" onclick="openWorld('tree-house-sanctuary.html')">
-
-        <img src="images/tree-house-sanctuary.png" alt="Tree House Sanctuary">
-
-        <div class="overlay">
-            <h3>Tree House Sanctuary</h3>
-            <p>Your hidden forest retreat.</p>
-        </div>
-
-    </div>
-
-</div>
-
-<script>
-
-function openWorld(worldFile) {
-    window.location.href = 'worlds/' + worldFile;
-}
-
-</script>
-
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

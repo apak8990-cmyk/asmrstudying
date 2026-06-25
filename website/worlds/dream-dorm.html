@@ -690,17 +690,47 @@ coins += reward;
 
             <h2>Session Complete</h2>
 
-            <p>Great work.</p>
-
             <h3>+${reward} Coins</h3>
 
-            <button class="focus-btn" onclick="location.reload()">
-                Continue
-            </button>
+            <div class="atmosphere-list">
+                ${coins >= 50 ? `
+                    <div class="atmosphere-option" onclick="purchaseBed('bed-01.png', 50)">
+                        Bed 01 — 50 Coins
+                    </div>
+                ` : `
+                    <div class="atmosphere-option" style="opacity:0.45; cursor:not-allowed;">
+                        Bed 01 — 50 Coins
+                    </div>
+                `}
+
+                ${coins >= 100 ? `
+                    <div class="atmosphere-option" onclick="purchaseBed('bed-02.png', 100)">
+                        Bed 02 — 100 Coins
+                    </div>
+                ` : `
+                    <div class="atmosphere-option" style="opacity:0.45; cursor:not-allowed;">
+                        Bed 02 — 100 Coins
+                    </div>
+                `}
+            </div>
 
         </div>
 
     `;
+}
+
+function purchaseBed(bed, price) {
+
+    if (coins < price) {
+        return;
+    }
+
+    coins -= price;
+
+    localStorage.setItem("dreamCoins", coins);
+    localStorage.setItem("ownedBed", bed);
+
+    location.reload();
 }
 
 
