@@ -665,39 +665,129 @@ const rewards = {
 };
 let timerInterval;
 let totalSeconds;
-let coins = Number(localStorage.getItem("dreamCoins")) || 0;
-let selectedItemId = null;
-let ownedBed =
-localStorage.getItem("ownedBed") || null;
+const SHOP_ITEMS = [
+    {
+        id: "bed-01",
+        name: "Classic Oak Bed",
+        price: 50,
+        image: "../images/furniture/bed-01.png"
+    },
+    {
+        id: "bed-02",
+        name: "Autumn Linen Bed",
+        price: 100,
+        image: "../images/furniture/bed-02.png"
+    }
+];
 
-const bedImages = {
-    "bed-01": "../images/furniture/bed-01.png",
-    "bed-02": "../images/furniture/bed-02.png"
+const ShopSystem = {
+    buy(itemId) {
+        const item = SHOP_ITEMS.find((shopItem) => shopItem.id === itemId);
+
+        if (!item) {
+            return;
+        }
+
+        const alreadyOwned = GameState.ownedItems.includes(item.id);
+
+        if (!alreadyOwned && GameState.coins < item.price) {
+            return;
+        }
+
+        if (!alreadyOwned) {
+            GameState.coins -= item.price;
+            GameState.ownedItems.push(item.id);
+        }
+
+        GameState.equippedItem = item.id;
+        GameState.save();
+        location.reload();
+    }
 };
 
-console.log("LOAD COINS:", coins);
+const GameState = {
+    coins: 0,
+    ownedItems: [],
+    equippedItem: null,
+
+    load() {
+        let savedState = {};
+
+        try {
+            savedState = JSON.parse(localStorage.getItem("dreamGameState")) || {};
+        } catch (error) {
+            savedState = {};
+        }
+
+        const savedCoins = Number(savedState.coins);
+        this.coins = Number.isFinite(savedCoins)
+            ? savedCoins
+            : Number(localStorage.getItem("dreamCoins")) || 0;
+
+        this.ownedItems = Array.isArray(savedState.ownedItems)
+            ? savedState.ownedItems
+            : [];
+
+        const legacyBed = localStorage.getItem("ownedBed");
+
+        if (
+            legacyBed &&
+            SHOP_ITEMS.some((item) => item.id === legacyBed) &&
+            !this.ownedItems.includes(legacyBed)
+        ) {
+            this.ownedItems.push(legacyBed);
+        }
+
+        this.equippedItem = savedState.equippedItem || null;
+        this.save();
+    },
+
+    save() {
+        localStorage.setItem("dreamGameState", JSON.stringify({
+            coins: this.coins,
+            ownedItems: this.ownedItems,
+            equippedItem: this.equippedItem
+        }));
+
+        localStorage.removeItem("dreamCoins");
+        localStorage.removeItem("ownedBed");
+    }
+};
+
+const RoomRenderer = {
+    render() {
+        const roomBed = document.getElementById("room-bed");
+        const item = SHOP_ITEMS.find(
+            (shopItem) => shopItem.id === GameState.equippedItem
+        );
+
+        if (!roomBed) {
+            return;
+        }
+
+        if (!item) {
+            roomBed.removeAttribute("src");
+            roomBed.alt = "";
+            roomBed.style.display = "none";
+            return;
+        }
+
+        roomBed.src = item.image;
+        roomBed.alt = item.name;
+        roomBed.style.display = "block";
+    }
+};
+
+GameState.load();
+
 window.onload = () => {
 
     document.getElementById("coins-display").innerText =
-        coins + " Coins";
+        GameState.coins + " Coins";
 
-    renderOwnedBed();
+    RoomRenderer.render();
 
 };
-
-function renderOwnedBed() {
-
-    const bedImage = bedImages[ownedBed];
-    const roomBed = document.getElementById("room-bed");
-
-    if (!bedImage || !roomBed) {
-        return;
-    }
-
-    roomBed.src = bedImage;
-    roomBed.alt = ownedBed;
-    roomBed.style.display = "block";
-}
 
 function startSession(minutes) {
 
@@ -784,14 +874,12 @@ function sessionComplete() {
     
 const reward = rewards[selectedMinutes];
 
-coins += reward;
+GameState.coins += reward;
 
-    localStorage.setItem("dreamCoins", coins);
-
-    console.log("SAVE COINS:", coins);
+    GameState.save();
     
     document.getElementById("coins-display").innerText =
-    coins + " Coins";
+    GameState.coins + " Coins";
 
     openShop(reward);
 }
@@ -803,7 +891,32 @@ function openShop(reward) {
     document.getElementById("world-content").style.display = "none";
     document.getElementById("room-timer").style.display = "none";
     sessionScreen.style.display = "none";
-    selectedItemId = null;
+
+    const shopItems = SHOP_ITEMS.map((item) => {
+        const owned = GameState.ownedItems.includes(item.id);
+        const equipped = GameState.equippedItem === item.id;
+        const locked = !owned && GameState.coins < item.price;
+        const actionText = equipped ? "Equipped" : owned ? "Equip" : "Buy";
+
+        return `
+            <div
+                class="shop-item${locked ? " locked" : ""}${equipped ? " selected" : ""}"
+                ${locked ? "" : `data-item-id="${item.id}" onclick="selectShopItem('${item.id}'); purchaseBed('${item.id}')"`}
+            >
+                <img class="shop-item-image" src="${item.image}" alt="${item.name}">
+                <div class="shop-item-info">
+                    <strong class="shop-item-name">${item.name}</strong>
+                    <span class="shop-item-price">${item.price} Coins</span>
+                    <button
+                        class="shop-item-button"
+                        ${locked || equipped ? "disabled" : `onclick="event.stopPropagation(); selectShopItem('${item.id}'); purchaseBed('${item.id}')"`}
+                    >
+                        ${locked ? "Locked" : actionText}
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join("");
 
     sessionScreen.innerHTML = `
 
@@ -814,49 +927,7 @@ function openShop(reward) {
             <h3>+${reward} Coins</h3>
 
             <div class="shop-grid">
-                ${coins >= 50 ? `
-                    <div class="shop-item" data-item-id="bed-01" onclick="selectShopItem('bed-01')">
-                        <img class="shop-item-image" src="../images/furniture/bed-01.png" alt="Classic Oak Bed">
-                        <div class="shop-item-info">
-                            <strong class="shop-item-name">Classic Oak Bed</strong>
-                            <span class="shop-item-price">50 Coins</span>
-                            <button class="shop-item-button" onclick="event.stopPropagation(); selectShopItem('bed-01'); purchaseBed('bed-01', 50)">
-                                Buy
-                            </button>
-                        </div>
-                    </div>
-                ` : `
-                    <div class="shop-item locked">
-                        <img class="shop-item-image" src="../images/furniture/bed-01.png" alt="Classic Oak Bed">
-                        <div class="shop-item-info">
-                            <strong class="shop-item-name">Classic Oak Bed</strong>
-                            <span class="shop-item-price">50 Coins</span>
-                            <button class="shop-item-button" disabled>Locked</button>
-                        </div>
-                    </div>
-                `}
-
-                ${coins >= 100 ? `
-                    <div class="shop-item" data-item-id="bed-02" onclick="selectShopItem('bed-02')">
-                        <img class="shop-item-image" src="../images/furniture/bed-02.png" alt="Autumn Linen Bed">
-                        <div class="shop-item-info">
-                            <strong class="shop-item-name">Autumn Linen Bed</strong>
-                            <span class="shop-item-price">100 Coins</span>
-                            <button class="shop-item-button" onclick="event.stopPropagation(); selectShopItem('bed-02'); purchaseBed('bed-02', 100)">
-                                Buy
-                            </button>
-                        </div>
-                    </div>
-                ` : `
-                    <div class="shop-item locked">
-                        <img class="shop-item-image" src="../images/furniture/bed-02.png" alt="Autumn Linen Bed">
-                        <div class="shop-item-info">
-                            <strong class="shop-item-name">Autumn Linen Bed</strong>
-                            <span class="shop-item-price">100 Coins</span>
-                            <button class="shop-item-button" disabled>Locked</button>
-                        </div>
-                    </div>
-                `}
+                ${shopItems}
             </div>
 
         </div>
@@ -868,25 +939,14 @@ function openShop(reward) {
 
 function selectShopItem(itemId) {
 
-    selectedItemId = itemId;
-
     document.querySelectorAll(".shop-item[data-item-id]").forEach((item) => {
-        item.classList.toggle("selected", item.dataset.itemId === selectedItemId);
+        item.classList.toggle("selected", item.dataset.itemId === itemId);
     });
 }
 
-function purchaseBed(bed, price) {
+function purchaseBed(bed) {
 
-    if (coins < price) {
-        return;
-    }
-
-    coins -= price;
-
-    localStorage.setItem("dreamCoins", coins);
-    localStorage.setItem("ownedBed", bed);
-
-    location.reload();
+    ShopSystem.buy(bed);
 }
 
 
