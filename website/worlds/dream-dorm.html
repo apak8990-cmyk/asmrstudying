@@ -139,6 +139,18 @@ body {
     font-family: Inter, sans-serif;
 }
 
+.atmosphere-select {
+    border: 0;
+    outline: 0;
+    color: white;
+    background: transparent;
+    font: inherit;
+}
+
+.atmosphere-select option {
+    color: #3d342d;
+}
+
 .center-content {
     position: absolute;
 
@@ -572,6 +584,15 @@ body {
         0 Coins
     </div>
 
+    <div class="stat">
+        <select id="atmosphere-select" class="atmosphere-select" onchange="setAtmosphereMode(this.value)">
+            <option value="midnight_focus">Midnight Focus</option>
+            <option value="soft_morning">Soft Morning</option>
+            <option value="rainy_comfort">Rainy Comfort</option>
+            <option value="deep_flow">Deep Flow</option>
+        </select>
+    </div>
+
 
 
 </div>
@@ -662,19 +683,19 @@ body {
 
         <div class="atmosphere-list">
 
-            <div class="atmosphere-option selected" onclick="selectAtmosphere('midnight_focus', this)">
+            <div class="atmosphere-option selected" onclick="selectAtmosphere('midnight_focus')">
                 Midnight Focus
             </div>
 
-            <div class="atmosphere-option" onclick="selectAtmosphere('soft_morning', this)">
+            <div class="atmosphere-option" onclick="selectAtmosphere('soft_morning')">
                 Soft Morning
             </div>
 
-            <div class="atmosphere-option" onclick="selectAtmosphere('rainy_comfort', this)">
+            <div class="atmosphere-option" onclick="selectAtmosphere('rainy_comfort')">
                 Rainy Comfort
             </div>
 
-            <div class="atmosphere-option" onclick="selectAtmosphere('deep_flow', this)">
+            <div class="atmosphere-option" onclick="selectAtmosphere('deep_flow')">
                 Deep Flow
             </div>
 
@@ -747,50 +768,21 @@ const ATMOSPHERE_MODES = {
     }
 };
 
-const AudioSystem = {
-    fadeMs: 2000,
-    volumes: {
-        music: 0.45,
-        ambient: 0.35,
-        sfx: 0.6
-    },
-    currentMode: null,
-    layers: {
-        music: null,
-        ambient: null
-    },
+class AudioManager {
+    constructor(sourcePresets) {
+        this.fadeMs = 2000;
+        this.currentMode = null;
+        this.presets = {};
 
-    playAtmosphere(modeId) {
-        const mode = ATMOSPHERE_MODES[modeId];
-
-        if (!mode || this.currentMode === modeId) {
-            return;
-        }
-
-        this.currentMode = modeId;
-        this.swapLayer("music", mode.music);
-        this.swapLayer("ambient", mode.ambient);
-    },
-
-    swapLayer(layerName, src) {
-        const oldAudio = this.layers[layerName];
-        const newAudio = this.createLoop(src);
-
-        this.layers[layerName] = newAudio;
-
-        if (oldAudio) {
-            this.fade(oldAudio, oldAudio.volume, 0, this.fadeMs, () => {
-                oldAudio.pause();
-                oldAudio.src = "";
-            });
-        }
-
-        newAudio.play().then(() => {
-            this.fade(newAudio, 0, this.volumes[layerName], this.fadeMs);
-        }).catch(() => {
-            newAudio.pause();
+        Object.entries(sourcePresets).forEach(([mode, preset]) => {
+            this.presets[mode] = {
+                music: this.createLoop(preset.music),
+                ambient: this.createLoop(preset.ambient),
+                musicVolume: 0.45,
+                ambientVolume: 0.35
+            };
         });
-    },
+    }
 
     createLoop(src) {
         const audio = new Audio(src);
@@ -798,9 +790,44 @@ const AudioSystem = {
         audio.loop = true;
         audio.preload = "auto";
         audio.volume = 0;
+        audio.load();
 
         return audio;
-    },
+    }
+
+    setAtmosphere(mode) {
+        const nextPreset = this.presets[mode];
+
+        if (!nextPreset || this.currentMode === mode) {
+            return;
+        }
+
+        const currentPreset = this.presets[this.currentMode];
+
+        if (currentPreset) {
+            this.fadeOut(currentPreset.music);
+            this.fadeOut(currentPreset.ambient);
+        }
+
+        this.currentMode = mode;
+        this.fadeIn(nextPreset.music, nextPreset.musicVolume);
+        this.fadeIn(nextPreset.ambient, nextPreset.ambientVolume);
+    }
+
+    fadeIn(audio, targetVolume = 1) {
+        audio.play().then(() => {
+            this.fade(audio, audio.volume, targetVolume, this.fadeMs);
+        }).catch(() => {
+            audio.pause();
+        });
+    }
+
+    fadeOut(audio) {
+        this.fade(audio, audio.volume, 0, this.fadeMs, () => {
+            audio.pause();
+            audio.currentTime = 0;
+        });
+    }
 
     fade(audio, from, to, duration, onComplete) {
         const start = performance.now();
@@ -828,38 +855,19 @@ const AudioSystem = {
 
         audio.volume = from;
         audio.fadeFrame = requestAnimationFrame(step);
-    },
-
-    playSfx(name = "ui") {
-        const mode = ATMOSPHERE_MODES[this.currentMode || selectedAtmosphere];
-        const src = mode && mode.sfx ? mode.sfx[name] : null;
-
-        if (!src) {
-            return;
-        }
-
-        const sfx = new Audio(src);
-
-        sfx.volume = this.volumes.sfx;
-        sfx.play().catch(() => {});
-    },
-
-    setMusicVolume(volume) {
-        this.volumes.music = volume;
-
-        if (this.layers.music) {
-            this.layers.music.volume = volume;
-        }
-    },
-
-    setAmbientVolume(volume) {
-        this.volumes.ambient = volume;
-
-        if (this.layers.ambient) {
-            this.layers.ambient.volume = volume;
-        }
     }
-};
+
+    stopAll() {
+        Object.values(this.presets).forEach((preset) => {
+            this.fadeOut(preset.music);
+            this.fadeOut(preset.ambient);
+        });
+
+        this.currentMode = null;
+    }
+}
+
+const audioManager = new AudioManager(ATMOSPHERE_MODES);
 
 const SHOP_ITEMS = [
     {
@@ -1030,16 +1038,31 @@ window.onload = () => {
 
 };
 
-function selectAtmosphere(modeId, optionElement) {
+function selectAtmosphere(modeId) {
+
+    setAtmosphereMode(modeId);
+}
+
+function setAtmosphereMode(modeId) {
 
     selectedAtmosphere = modeId;
 
+    const atmosphereSelect = document.getElementById("atmosphere-select");
+
+    if (atmosphereSelect) {
+        atmosphereSelect.value = modeId;
+    }
+
     document.querySelectorAll(".atmosphere-option").forEach((option) => {
-        option.classList.toggle("selected", option === optionElement);
+        const action = option.getAttribute("onclick") || "";
+
+        option.classList.toggle(
+            "selected",
+            action.includes(modeId)
+        );
     });
 
-    AudioSystem.playAtmosphere(modeId);
-    AudioSystem.playSfx("ui");
+    audioManager.setAtmosphere(modeId);
 }
 
 function startSession(minutes) {
@@ -1062,7 +1085,7 @@ function startSession(minutes) {
     updateTimerDisplay(minutes * 60);
 }
 
-function beginTimer() { AudioSystem.playAtmosphere(selectedAtmosphere); document.getElementById("session-screen").style.display = "none";
+function beginTimer() { audioManager.setAtmosphere(selectedAtmosphere); document.getElementById("session-screen").style.display = "none";
 
 document.getElementById("room-timer").style.display = "block";
 
