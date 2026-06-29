@@ -23,13 +23,14 @@
     width: 420px;
     max-height: 55vh;
 
-    bottom: 80px;
-
-    left: 140px;
+    top: 53%;
+    left: 7%;
 
     z-index: 5;
 
     object-fit: contain;
+    transform: perspective(900px) rotateZ(-6deg) skewX(-2deg) scale(0.92);
+    transform-origin: 18% 20%;
     background: transparent;
     border: 0;
     box-shadow: none;
@@ -385,11 +386,13 @@ body {
     position: absolute;
     width: 420px;
     height: 260px;
-    left: 140px;
-    bottom: 80px;
+    top: 53%;
+    left: 7%;
     z-index: 20;
     display: none;
     cursor: pointer;
+    transform: perspective(900px) rotateZ(-6deg) skewX(-2deg) scale(0.92);
+    transform-origin: 18% 20%;
     border: 2px dashed rgba(255,255,255,0.75);
     background: rgba(255,255,255,0.08);
 }
@@ -441,17 +444,17 @@ body {
 
 #room-bed {
     width: min(300px, 72vw);
-    left: 50%;
-    bottom: 48px;
-    transform: translateX(-50%);
+    top: 56%;
+    left: 8%;
+    transform: perspective(700px) rotateZ(-6deg) skewX(-2deg) scale(0.9);
 }
 
 #bed-slot {
     width: min(300px, 72vw);
     height: 190px;
-    left: 50%;
-    bottom: 48px;
-    transform: translateX(-50%);
+    top: 56%;
+    left: 8%;
+    transform: perspective(700px) rotateZ(-6deg) skewX(-2deg) scale(0.9);
 }
 }
 #room-timer {
