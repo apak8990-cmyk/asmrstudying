@@ -381,6 +381,31 @@ body {
     cursor: not-allowed;
 }
 
+#bed-slot {
+    position: absolute;
+    width: 420px;
+    height: 260px;
+    left: 140px;
+    bottom: 80px;
+    z-index: 20;
+    display: none;
+    cursor: pointer;
+    border: 2px dashed rgba(255,255,255,0.75);
+    background: rgba(255,255,255,0.08);
+}
+
+#placement-preview {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 0.48;
+    pointer-events: none;
+    background: transparent;
+}
+
 @media (max-width: 768px) {
 
     .session-overlay {
@@ -416,6 +441,14 @@ body {
 
 #room-bed {
     width: min(300px, 72vw);
+    left: 50%;
+    bottom: 48px;
+    transform: translateX(-50%);
+}
+
+#bed-slot {
+    width: min(300px, 72vw);
+    height: 190px;
     left: 50%;
     bottom: 48px;
     transform: translateX(-50%);
@@ -502,6 +535,8 @@ body {
 <body>
 
 <div class="world-page">
+    <div id="bed-slot" onclick="placeSelectedItem()"></div>
+
     <div class="top-bar">
 
        <a href="https://apak8990-cmyk.github.io/asmrstudying/website/" class="back-btn">
@@ -682,20 +717,13 @@ const ShopSystem = {
             return;
         }
 
-        const alreadyOwned = GameState.ownedItems.includes(item.id);
-
-        if (!alreadyOwned && GameState.coins < item.price) {
+        if (!GameState.buyItem(item)) {
             return;
         }
 
-        if (!alreadyOwned) {
-            GameState.coins -= item.price;
-            GameState.ownedItems.push(item.id);
-        }
-
-        GameState.equippedItem = item.id;
-        GameState.save();
-        location.reload();
+        document.getElementById("coins-display").innerText =
+            GameState.coins + " Coins";
+        enterPlacementMode(item.id);
     }
 };
 
@@ -703,6 +731,7 @@ const GameState = {
     coins: 0,
     ownedItems: [],
     equippedItem: null,
+    pendingPlacementItem: null,
 
     load() {
         let savedState = {};
@@ -735,32 +764,87 @@ const GameState = {
 
         localStorage.removeItem("dreamCoins");
         localStorage.removeItem("ownedBed");
+    },
+
+    addCoins(amount) {
+        this.coins += amount;
+        this.save();
+    },
+
+    ownsItem(itemId) {
+        return this.ownedItems.includes(itemId);
+    },
+
+    isEquipped(itemId) {
+        return this.equippedItem === itemId;
+    },
+
+    buyItem(item) {
+        const alreadyOwned = this.ownsItem(item.id);
+
+        if (!alreadyOwned && this.coins < item.price) {
+            return false;
+        }
+
+        if (!alreadyOwned) {
+            this.coins -= item.price;
+            this.ownedItems.push(item.id);
+            this.save();
+        }
+
+        return true;
+    },
+
+    startPlacement(itemId) {
+        this.pendingPlacementItem = itemId;
+    },
+
+    placePendingItem() {
+        if (!this.pendingPlacementItem) {
+            return false;
+        }
+
+        this.equippedItem = this.pendingPlacementItem;
+        this.pendingPlacementItem = null;
+        this.save();
+        return true;
     }
 };
 
 const RoomRenderer = {
     render() {
-        let roomBed = document.getElementById("room-bed");
+        const worldPage = document.querySelector(".world-page");
+
+        if (!worldPage) {
+            return;
+        }
+
+        worldPage.querySelectorAll(
+            ":scope > #room-bed, :scope > .room-furniture-bed, :scope > img[src*='images/furniture/bed-']"
+        ).forEach((bed) => {
+            bed.remove();
+        });
+
+        if (!GameState.equippedItem) {
+            return;
+        }
+
         const item = SHOP_ITEMS.find(
             (shopItem) => shopItem.id === GameState.equippedItem
         );
 
         if (!item) {
-            if (roomBed) {
-                roomBed.remove();
-            }
             return;
         }
 
-        if (!roomBed) {
-            roomBed = document.createElement("img");
-            roomBed.id = "room-bed";
-            document.querySelector(".world-page").prepend(roomBed);
-        }
+        const roomBed = document.createElement("img");
 
+        roomBed.id = "room-bed";
+        roomBed.className = "room-furniture-bed";
         roomBed.src = item.image;
         roomBed.alt = item.name;
         roomBed.style.display = "block";
+        worldPage.prepend(roomBed);
     }
 };
 
@@ -860,9 +944,7 @@ function sessionComplete() {
     
 const reward = rewards[selectedMinutes];
 
-GameState.coins += reward;
-
-    GameState.save();
+GameState.addCoins(reward);
     
     document.getElementById("coins-display").innerText =
     GameState.coins + " Coins";
@@ -879,15 +961,15 @@ function openShop(reward) {
     sessionScreen.style.display = "none";
 
     const shopItems = SHOP_ITEMS.map((item) => {
-        const owned = GameState.ownedItems.includes(item.id);
-        const equipped = GameState.equippedItem === item.id;
-        const locked = !owned && GameState.coins < item.price;
-        const actionText = equipped ? "Equipped" : owned ? "Equip" : "Buy";
+        const locked = !GameState.ownsItem(item.id) && GameState.coins < item.price;
+        const actionText = GameState.isEquipped(item.id)
+            ? "Equipped"
+            : GameState.ownsItem(item.id) ? "Equip" : "Buy";
 
         return `
             <div
-                class="shop-item${locked ? " locked" : ""}${equipped ? " equipped" : ""}"
-                ${locked || equipped ? "" : `onclick="purchaseBed('${item.id}')"`}
+                class="shop-item${locked ? " locked" : ""}${GameState.isEquipped(item.id) ? " equipped" : ""}"
+                ${locked || GameState.isEquipped(item.id) ? "" : `onclick="purchaseBed('${item.id}')"`}
             >
                 <img class="shop-item-image" src="${item.image}" alt="${item.name}">
                 <div class="shop-item-info">
@@ -895,7 +977,7 @@ function openShop(reward) {
                     <span class="shop-item-price">${item.price} Coins</span>
                     <button
                         class="shop-item-button"
-                        ${locked || equipped ? "disabled" : `onclick="event.stopPropagation(); purchaseBed('${item.id}')"`}
+                        ${locked || GameState.isEquipped(item.id) ? "disabled" : `onclick="event.stopPropagation(); purchaseBed('${item.id}')"`}
                     >
                         ${locked ? "Locked" : actionText}
                     </button>
@@ -921,6 +1003,57 @@ function openShop(reward) {
     `;
 
     sessionScreen.style.display = "flex";
+}
+
+function enterPlacementMode(itemId) {
+
+    const item = SHOP_ITEMS.find((shopItem) => shopItem.id === itemId);
+    const bedSlot = document.getElementById("bed-slot");
+    const sessionScreen = document.getElementById("session-screen");
+
+    if (!item || !bedSlot) {
+        return;
+    }
+
+    GameState.startPlacement(item.id);
+    sessionScreen.style.display = "none";
+    document.getElementById("room-timer").style.display = "none";
+    document.getElementById("world-content").style.display = "none";
+    RoomRenderer.render();
+
+    bedSlot.replaceChildren();
+
+    const preview = document.createElement("img");
+
+    preview.id = "placement-preview";
+    preview.src = item.image;
+    preview.alt = item.name;
+    bedSlot.appendChild(preview);
+    bedSlot.style.display = "block";
+}
+
+function placeSelectedItem() {
+
+    const bedSlot = document.getElementById("bed-slot");
+    const preview = document.getElementById("placement-preview");
+
+    if (!GameState.pendingPlacementItem) {
+        return;
+    }
+
+    if (!GameState.placePendingItem()) {
+        return;
+    }
+
+    if (preview) {
+        preview.remove();
+    }
+
+    if (bedSlot) {
+        bedSlot.style.display = "none";
+    }
+
+    RoomRenderer.render();
 }
 
 function purchaseBed(bed) {
