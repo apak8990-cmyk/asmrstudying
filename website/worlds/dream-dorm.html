@@ -57,12 +57,13 @@ body {
 
 .world-page {
     position: fixed;
-    --bed-anchor-x: 19%;
-    --bed-anchor-y: 61%;
-    --bed-width: min(430px, 42vw);
-    --bed-slot-height: 260px;
-    --bed-anchor-transform: translate(-18%, -20%) perspective(900px) rotateZ(-7deg) skewX(-3deg) scale(0.92);
-    --bed-transform-origin: 18% 20%;
+    --bed-anchor-x: 31.97%;
+    --bed-anchor-y: 42.24%;
+    --bed-width: min(360px, 30vw);
+    --bed-slot-width: 15.36%;
+    --bed-slot-height: 10.45%;
+    --bed-anchor-transform: translate(-50%, -50%) perspective(900px) rotateZ(-7deg) skewX(-3deg) scale(0.92);
+    --bed-transform-origin: 50% 50%;
 
     top: 0;
     left: 0;
@@ -390,7 +391,7 @@ body {
 
 #bed-slot {
     position: absolute;
-    width: var(--bed-width);
+    width: var(--bed-slot-width);
     height: var(--bed-slot-height);
     top: var(--bed-anchor-y);
     left: var(--bed-anchor-x);
@@ -446,11 +447,8 @@ body {
 }
 .world-page {
     background-image: url('../images/dream-dorm-mobile.png');
-    --bed-anchor-x: 24%;
-    --bed-anchor-y: 62%;
     --bed-width: min(300px, 72vw);
-    --bed-slot-height: 190px;
-    --bed-anchor-transform: translate(-18%, -20%) perspective(700px) rotateZ(-7deg) skewX(-3deg) scale(0.9);
+    --bed-anchor-transform: translate(-50%, -50%) perspective(700px) rotateZ(-7deg) skewX(-3deg) scale(0.9);
 }
 
 #room-bed {
@@ -458,7 +456,7 @@ body {
 }
 
 #bed-slot {
-    width: var(--bed-width);
+    width: var(--bed-slot-width);
     height: var(--bed-slot-height);
 }
 }
