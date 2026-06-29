@@ -20,17 +20,17 @@
     position: absolute;
     display: block;
 
-    width: 420px;
+    width: var(--bed-width);
     max-height: 55vh;
 
-    top: 53%;
-    left: 7%;
+    top: var(--bed-anchor-y);
+    left: var(--bed-anchor-x);
 
     z-index: 5;
 
     object-fit: contain;
-    transform: perspective(900px) rotateZ(-6deg) skewX(-2deg) scale(0.92);
-    transform-origin: 18% 20%;
+    transform: var(--bed-anchor-transform);
+    transform-origin: var(--bed-transform-origin);
     background: transparent;
     border: 0;
     box-shadow: none;
@@ -57,6 +57,12 @@ body {
 
 .world-page {
     position: fixed;
+    --bed-anchor-x: 19%;
+    --bed-anchor-y: 61%;
+    --bed-width: min(430px, 42vw);
+    --bed-slot-height: 260px;
+    --bed-anchor-transform: translate(-18%, -20%) perspective(900px) rotateZ(-7deg) skewX(-3deg) scale(0.92);
+    --bed-transform-origin: 18% 20%;
 
     top: 0;
     left: 0;
@@ -384,15 +390,15 @@ body {
 
 #bed-slot {
     position: absolute;
-    width: 420px;
-    height: 260px;
-    top: 53%;
-    left: 7%;
+    width: var(--bed-width);
+    height: var(--bed-slot-height);
+    top: var(--bed-anchor-y);
+    left: var(--bed-anchor-x);
     z-index: 20;
     display: none;
     cursor: pointer;
-    transform: perspective(900px) rotateZ(-6deg) skewX(-2deg) scale(0.92);
-    transform-origin: 18% 20%;
+    transform: var(--bed-anchor-transform);
+    transform-origin: var(--bed-transform-origin);
     border: 2px dashed rgba(255,255,255,0.75);
     background: rgba(255,255,255,0.08);
 }
@@ -440,21 +446,20 @@ body {
 }
 .world-page {
     background-image: url('../images/dream-dorm-mobile.png');
+    --bed-anchor-x: 24%;
+    --bed-anchor-y: 62%;
+    --bed-width: min(300px, 72vw);
+    --bed-slot-height: 190px;
+    --bed-anchor-transform: translate(-18%, -20%) perspective(700px) rotateZ(-7deg) skewX(-3deg) scale(0.9);
 }
 
 #room-bed {
-    width: min(300px, 72vw);
-    top: 56%;
-    left: 8%;
-    transform: perspective(700px) rotateZ(-6deg) skewX(-2deg) scale(0.9);
+    width: var(--bed-width);
 }
 
 #bed-slot {
-    width: min(300px, 72vw);
-    height: 190px;
-    top: 56%;
-    left: 8%;
-    transform: perspective(700px) rotateZ(-6deg) skewX(-2deg) scale(0.9);
+    width: var(--bed-width);
+    height: var(--bed-slot-height);
 }
 }
 #room-timer {
