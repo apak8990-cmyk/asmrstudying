@@ -589,7 +589,7 @@ body {
             <option value="midnight_focus">Midnight Focus</option>
             <option value="soft_morning">Soft Morning</option>
             <option value="rainy_comfort">Rainy Comfort</option>
-            <option value="deep_flow">Deep Flow</option>
+            <option value="deep_focus">Deep Focus</option>
         </select>
     </div>
 
@@ -695,8 +695,8 @@ body {
                 Rainy Comfort
             </div>
 
-            <div class="atmosphere-option" onclick="selectAtmosphere('deep_flow')">
-                Deep Flow
+            <div class="atmosphere-option" onclick="selectAtmosphere('deep_focus')">
+                Deep Focus
             </div>
 
         </div>
@@ -736,35 +736,24 @@ const rewards = {
 let timerInterval;
 let totalSeconds;
 let selectedAtmosphere = "midnight_focus";
+let sessionAudioActive = false;
 
 const ATMOSPHERE_MODES = {
     midnight_focus: {
-        music: "../audio/dream-dorm/midnight_focus_music.mp3",
-        ambient: "../audio/dream-dorm/midnight_focus_ambient.mp3",
-        sfx: {
-            ui: "../audio/dream-dorm/ui_soft_click.mp3"
-        }
+        src: "../assets/audio/midnight_focus.mp3",
+        volume: 0.45
     },
     soft_morning: {
-        music: "../audio/dream-dorm/soft_morning_music.mp3",
-        ambient: "../audio/dream-dorm/soft_morning_ambient.mp3",
-        sfx: {
-            ui: "../audio/dream-dorm/ui_soft_click.mp3"
-        }
+        src: "../assets/audio/soft_morning.mp3",
+        volume: 0.45
     },
     rainy_comfort: {
-        music: "../audio/dream-dorm/rainy_comfort_music.mp3",
-        ambient: "../audio/dream-dorm/rainy_comfort_ambient.mp3",
-        sfx: {
-            ui: "../audio/dream-dorm/ui_soft_click.mp3"
-        }
+        src: "../assets/audio/rainy_comfort.mp3",
+        volume: 0.45
     },
-    deep_flow: {
-        music: "../audio/dream-dorm/deep_flow_music.mp3",
-        ambient: "../audio/dream-dorm/deep_flow_ambient.mp3",
-        sfx: {
-            ui: "../audio/dream-dorm/ui_soft_click.mp3"
-        }
+    deep_focus: {
+        src: "../assets/audio/deep_focus.mp3",
+        volume: 0.45
     }
 };
 
@@ -772,14 +761,14 @@ class AudioManager {
     constructor(sourcePresets) {
         this.fadeMs = 2000;
         this.currentMode = null;
+        this.currentAudio = null;
+        this.transitionId = 0;
         this.presets = {};
 
         Object.entries(sourcePresets).forEach(([mode, preset]) => {
             this.presets[mode] = {
-                music: this.createLoop(preset.music),
-                ambient: this.createLoop(preset.ambient),
-                musicVolume: 0.45,
-                ambientVolume: 0.35
+                audio: this.createLoop(preset.src),
+                volume: preset.volume
             };
         });
     }
@@ -802,16 +791,28 @@ class AudioManager {
             return;
         }
 
-        const currentPreset = this.presets[this.currentMode];
+        if (this.currentAudio) {
+            const transitionId = ++this.transitionId;
+            const previousAudio = this.currentAudio;
 
-        if (currentPreset) {
-            this.fadeOut(currentPreset.music);
-            this.fadeOut(currentPreset.ambient);
+            this.currentMode = mode;
+            this.currentAudio = null;
+
+            this.fadeOut(previousAudio, () => {
+                if (this.transitionId !== transitionId) {
+                    return;
+                }
+
+                this.currentAudio = nextPreset.audio;
+                this.fadeIn(nextPreset.audio, nextPreset.volume);
+            });
+            return;
         }
 
+        this.transitionId++;
         this.currentMode = mode;
-        this.fadeIn(nextPreset.music, nextPreset.musicVolume);
-        this.fadeIn(nextPreset.ambient, nextPreset.ambientVolume);
+        this.currentAudio = nextPreset.audio;
+        this.fadeIn(nextPreset.audio, nextPreset.volume);
     }
 
     fadeIn(audio, targetVolume = 1) {
@@ -822,10 +823,14 @@ class AudioManager {
         });
     }
 
-    fadeOut(audio) {
+    fadeOut(audio, onComplete) {
         this.fade(audio, audio.volume, 0, this.fadeMs, () => {
             audio.pause();
             audio.currentTime = 0;
+
+            if (onComplete) {
+                onComplete();
+            }
         });
     }
 
@@ -858,12 +863,14 @@ class AudioManager {
     }
 
     stopAll() {
+        this.transitionId++;
+
         Object.values(this.presets).forEach((preset) => {
-            this.fadeOut(preset.music);
-            this.fadeOut(preset.ambient);
+            this.fadeOut(preset.audio);
         });
 
         this.currentMode = null;
+        this.currentAudio = null;
     }
 }
 
@@ -1062,7 +1069,9 @@ function setAtmosphereMode(modeId) {
         );
     });
 
-    audioManager.setAtmosphere(modeId);
+    if (sessionAudioActive) {
+        audioManager.setAtmosphere(modeId);
+    }
 }
 
 function startSession(minutes) {
@@ -1085,7 +1094,7 @@ function startSession(minutes) {
     updateTimerDisplay(minutes * 60);
 }
 
-function beginTimer() { audioManager.setAtmosphere(selectedAtmosphere); document.getElementById("session-screen").style.display = "none";
+function beginTimer() { sessionAudioActive = true; audioManager.setAtmosphere(selectedAtmosphere); document.getElementById("session-screen").style.display = "none";
 
 document.getElementById("room-timer").style.display = "block";
 
@@ -1140,6 +1149,8 @@ document.getElementById(
 function leaveSession() {
 
     clearInterval(timerInterval);
+    sessionAudioActive = false;
+    audioManager.stopAll();
 
     document.getElementById("session-screen").style.display = "none";
 
@@ -1149,6 +1160,9 @@ function leaveSession() {
 function sessionComplete() { 
     
 const reward = rewards[selectedMinutes];
+
+sessionAudioActive = false;
+audioManager.stopAll();
 
 GameState.addCoins(reward);
     
