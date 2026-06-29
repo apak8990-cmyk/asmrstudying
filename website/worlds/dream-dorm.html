@@ -311,6 +311,12 @@ body {
     background: rgba(255,255,255,0.16);
 }
 
+.atmosphere-option.selected {
+
+    background: rgba(255,255,255,0.22);
+    border: 1px solid rgba(255,255,255,0.35);
+}
+
 .shop-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -656,20 +662,20 @@ body {
 
         <div class="atmosphere-list">
 
-            <div class="atmosphere-option">
-                Rain on Campus
+            <div class="atmosphere-option selected" onclick="selectAtmosphere('midnight_focus', this)">
+                Midnight Focus
             </div>
 
-            <div class="atmosphere-option">
-                Library Ambience
+            <div class="atmosphere-option" onclick="selectAtmosphere('soft_morning', this)">
+                Soft Morning
             </div>
 
-            <div class="atmosphere-option">
-                Soft Jazz
+            <div class="atmosphere-option" onclick="selectAtmosphere('rainy_comfort', this)">
+                Rainy Comfort
             </div>
 
-            <div class="atmosphere-option">
-                Forest Breeze
+            <div class="atmosphere-option" onclick="selectAtmosphere('deep_flow', this)">
+                Deep Flow
             </div>
 
         </div>
@@ -708,6 +714,153 @@ const rewards = {
 };
 let timerInterval;
 let totalSeconds;
+let selectedAtmosphere = "midnight_focus";
+
+const ATMOSPHERE_MODES = {
+    midnight_focus: {
+        music: "../audio/dream-dorm/midnight_focus_music.mp3",
+        ambient: "../audio/dream-dorm/midnight_focus_ambient.mp3",
+        sfx: {
+            ui: "../audio/dream-dorm/ui_soft_click.mp3"
+        }
+    },
+    soft_morning: {
+        music: "../audio/dream-dorm/soft_morning_music.mp3",
+        ambient: "../audio/dream-dorm/soft_morning_ambient.mp3",
+        sfx: {
+            ui: "../audio/dream-dorm/ui_soft_click.mp3"
+        }
+    },
+    rainy_comfort: {
+        music: "../audio/dream-dorm/rainy_comfort_music.mp3",
+        ambient: "../audio/dream-dorm/rainy_comfort_ambient.mp3",
+        sfx: {
+            ui: "../audio/dream-dorm/ui_soft_click.mp3"
+        }
+    },
+    deep_flow: {
+        music: "../audio/dream-dorm/deep_flow_music.mp3",
+        ambient: "../audio/dream-dorm/deep_flow_ambient.mp3",
+        sfx: {
+            ui: "../audio/dream-dorm/ui_soft_click.mp3"
+        }
+    }
+};
+
+const AudioSystem = {
+    fadeMs: 2000,
+    volumes: {
+        music: 0.45,
+        ambient: 0.35,
+        sfx: 0.6
+    },
+    currentMode: null,
+    layers: {
+        music: null,
+        ambient: null
+    },
+
+    playAtmosphere(modeId) {
+        const mode = ATMOSPHERE_MODES[modeId];
+
+        if (!mode || this.currentMode === modeId) {
+            return;
+        }
+
+        this.currentMode = modeId;
+        this.swapLayer("music", mode.music);
+        this.swapLayer("ambient", mode.ambient);
+    },
+
+    swapLayer(layerName, src) {
+        const oldAudio = this.layers[layerName];
+        const newAudio = this.createLoop(src);
+
+        this.layers[layerName] = newAudio;
+
+        if (oldAudio) {
+            this.fade(oldAudio, oldAudio.volume, 0, this.fadeMs, () => {
+                oldAudio.pause();
+                oldAudio.src = "";
+            });
+        }
+
+        newAudio.play().then(() => {
+            this.fade(newAudio, 0, this.volumes[layerName], this.fadeMs);
+        }).catch(() => {
+            newAudio.pause();
+        });
+    },
+
+    createLoop(src) {
+        const audio = new Audio(src);
+
+        audio.loop = true;
+        audio.preload = "auto";
+        audio.volume = 0;
+
+        return audio;
+    },
+
+    fade(audio, from, to, duration, onComplete) {
+        const start = performance.now();
+
+        if (audio.fadeFrame) {
+            cancelAnimationFrame(audio.fadeFrame);
+        }
+
+        const step = (now) => {
+            const progress = Math.min((now - start) / duration, 1);
+
+            audio.volume = from + (to - from) * progress;
+
+            if (progress < 1) {
+                audio.fadeFrame = requestAnimationFrame(step);
+                return;
+            }
+
+            audio.volume = to;
+
+            if (onComplete) {
+                onComplete();
+            }
+        };
+
+        audio.volume = from;
+        audio.fadeFrame = requestAnimationFrame(step);
+    },
+
+    playSfx(name = "ui") {
+        const mode = ATMOSPHERE_MODES[this.currentMode || selectedAtmosphere];
+        const src = mode && mode.sfx ? mode.sfx[name] : null;
+
+        if (!src) {
+            return;
+        }
+
+        const sfx = new Audio(src);
+
+        sfx.volume = this.volumes.sfx;
+        sfx.play().catch(() => {});
+    },
+
+    setMusicVolume(volume) {
+        this.volumes.music = volume;
+
+        if (this.layers.music) {
+            this.layers.music.volume = volume;
+        }
+    },
+
+    setAmbientVolume(volume) {
+        this.volumes.ambient = volume;
+
+        if (this.layers.ambient) {
+            this.layers.ambient.volume = volume;
+        }
+    }
+};
+
 const SHOP_ITEMS = [
     {
         id: "bed-01",
@@ -877,6 +1030,18 @@ window.onload = () => {
 
 };
 
+function selectAtmosphere(modeId, optionElement) {
+
+    selectedAtmosphere = modeId;
+
+    document.querySelectorAll(".atmosphere-option").forEach((option) => {
+        option.classList.toggle("selected", option === optionElement);
+    });
+
+    AudioSystem.playAtmosphere(modeId);
+    AudioSystem.playSfx("ui");
+}
+
 function startSession(minutes) {
 
     selectedMinutes = minutes;
@@ -897,7 +1062,7 @@ function startSession(minutes) {
     updateTimerDisplay(minutes * 60);
 }
 
-function beginTimer() { document.getElementById("session-screen").style.display = "none";
+function beginTimer() { AudioSystem.playAtmosphere(selectedAtmosphere); document.getElementById("session-screen").style.display = "none";
 
 document.getElementById("room-timer").style.display = "block";
 
