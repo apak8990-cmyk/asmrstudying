@@ -27,6 +27,8 @@
     z-index: 5;
 
     object-fit: contain;
+    transform: rotate(var(--snap-rotation, 0deg));
+    transform-origin: 50% 50%;
     background: transparent;
     border: 0;
     box-shadow: none;
@@ -418,7 +420,7 @@ body {
     pointer-events: none;
     background: transparent;
     z-index: 1000;
-    transform: translate(-50%, -50%) perspective(900px) rotateZ(-7deg) skewX(-3deg) scale(0.92);
+    transform: translate(-50%, -50%) perspective(900px) rotate(var(--snap-rotation, 0deg)) rotateZ(-7deg) skewX(-3deg) scale(0.92);
     transform-origin: 50% 50%;
 }
 
@@ -547,7 +549,7 @@ body {
 <body>
 
 <div class="world-page">
-    <div id="bed-slot" class="snap-point" data-snap-point-id="bed-slot" data-snap-point-type="bed"></div>
+    <div id="bed-slot" class="snap-point" data-snap-point-id="bed-slot" data-snap-point-type="bed" data-rotation="0"></div>
 
     <div class="top-bar">
 
@@ -859,6 +861,7 @@ const RoomRenderer = {
         roomBed.src = item.image;
         roomBed.alt = item.name;
         roomBed.style.display = "block";
+        applySnapRotation(roomBed, snapPoint);
         snapPoint.appendChild(roomBed);
     }
 };
@@ -1060,6 +1063,7 @@ function enterPlacementMode(itemId) {
         preview.style.top =
             snapRect.top - roomRect.top + snapRect.height / 2 + "px";
         preview.dataset.snapPointId = firstSnapPoint.id;
+        applySnapRotation(preview, firstSnapPoint);
         setActiveSnapPoint(firstSnapPoint);
     }
 
@@ -1093,12 +1097,14 @@ function movePlacementPreview(event) {
         preview.style.top =
             snapRect.top - roomRect.top + snapRect.height / 2 + "px";
         preview.dataset.snapPointId = snapPoint.id;
+        applySnapRotation(preview, snapPoint);
         return;
     }
 
     preview.style.left = event.clientX - roomRect.left + "px";
     preview.style.top = event.clientY - roomRect.top + "px";
     delete preview.dataset.snapPointId;
+    preview.style.removeProperty("--snap-rotation");
 }
 
 function placeGhostPreview() {
@@ -1142,6 +1148,13 @@ function setActiveSnapPoint(activeSnapPoint) {
             snapPoint === activeSnapPoint
         );
     });
+}
+
+function applySnapRotation(element, snapPoint) {
+
+    const rotation = Number(snapPoint.dataset.rotation) || 0;
+
+    element.style.setProperty("--snap-rotation", rotation + "deg");
 }
 
 function placeSelectedItem(snapPointId) {
