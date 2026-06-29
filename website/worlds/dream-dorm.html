@@ -322,7 +322,7 @@ body {
 }
 
 .shop-item:hover,
-.shop-item.selected {
+.shop-item.equipped {
     border-color: rgba(255,255,255,0.8);
     background: rgba(255,255,255,0.16);
 }
@@ -502,12 +502,6 @@ body {
 <body>
 
 <div class="world-page">
-    <img
-    id="room-bed"
-    src=""
-    style="display:none;"
->
-
     <div class="top-bar">
 
        <a href="https://apak8990-cmyk.github.io/asmrstudying/website/" class="back-btn">
@@ -722,21 +716,11 @@ const GameState = {
         const savedCoins = Number(savedState.coins);
         this.coins = Number.isFinite(savedCoins)
             ? savedCoins
-            : Number(localStorage.getItem("dreamCoins")) || 0;
+            : 0;
 
         this.ownedItems = Array.isArray(savedState.ownedItems)
             ? savedState.ownedItems
             : [];
-
-        const legacyBed = localStorage.getItem("ownedBed");
-
-        if (
-            legacyBed &&
-            SHOP_ITEMS.some((item) => item.id === legacyBed) &&
-            !this.ownedItems.includes(legacyBed)
-        ) {
-            this.ownedItems.push(legacyBed);
-        }
 
         this.equippedItem = savedState.equippedItem || null;
         this.save();
@@ -756,20 +740,22 @@ const GameState = {
 
 const RoomRenderer = {
     render() {
-        const roomBed = document.getElementById("room-bed");
+        let roomBed = document.getElementById("room-bed");
         const item = SHOP_ITEMS.find(
             (shopItem) => shopItem.id === GameState.equippedItem
         );
 
-        if (!roomBed) {
+        if (!item) {
+            if (roomBed) {
+                roomBed.remove();
+            }
             return;
         }
 
-        if (!item) {
-            roomBed.removeAttribute("src");
-            roomBed.alt = "";
-            roomBed.style.display = "none";
-            return;
+        if (!roomBed) {
+            roomBed = document.createElement("img");
+            roomBed.id = "room-bed";
+            document.querySelector(".world-page").prepend(roomBed);
         }
 
         roomBed.src = item.image;
@@ -900,8 +886,8 @@ function openShop(reward) {
 
         return `
             <div
-                class="shop-item${locked ? " locked" : ""}${equipped ? " selected" : ""}"
-                ${locked ? "" : `data-item-id="${item.id}" onclick="selectShopItem('${item.id}'); purchaseBed('${item.id}')"`}
+                class="shop-item${locked ? " locked" : ""}${equipped ? " equipped" : ""}"
+                ${locked || equipped ? "" : `onclick="purchaseBed('${item.id}')"`}
             >
                 <img class="shop-item-image" src="${item.image}" alt="${item.name}">
                 <div class="shop-item-info">
@@ -909,7 +895,7 @@ function openShop(reward) {
                     <span class="shop-item-price">${item.price} Coins</span>
                     <button
                         class="shop-item-button"
-                        ${locked || equipped ? "disabled" : `onclick="event.stopPropagation(); selectShopItem('${item.id}'); purchaseBed('${item.id}')"`}
+                        ${locked || equipped ? "disabled" : `onclick="event.stopPropagation(); purchaseBed('${item.id}')"`}
                     >
                         ${locked ? "Locked" : actionText}
                     </button>
@@ -935,13 +921,6 @@ function openShop(reward) {
     `;
 
     sessionScreen.style.display = "flex";
-}
-
-function selectShopItem(itemId) {
-
-    document.querySelectorAll(".shop-item[data-item-id]").forEach((item) => {
-        item.classList.toggle("selected", item.dataset.itemId === itemId);
-    });
 }
 
 function purchaseBed(bed) {
