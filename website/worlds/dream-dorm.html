@@ -15,6 +15,49 @@
 <link rel="stylesheet" href="../style.css">
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --color-bg-primary: #A9C9F7;
+    --color-bg-secondary: #C8DCFA;
+    --color-surface: #F7FAFF;
+
+    --color-text-primary: #111111;
+    --color-text-secondary: #414852;
+    --color-text-light: #FFFFFF;
+
+    --color-accent-lime: #E8F24A;
+    --color-accent-coral: #FF7668;
+
+    --color-border: rgba(17, 17, 17, 0.35);
+    --color-border-strong: #111111;
+
+    --font-editorial: "Bodoni Moda", "Times New Roman", Georgia, serif;
+    --font-interface: "Inter", Arial, sans-serif;
+
+    --radius-small: 8px;
+    --radius-medium: 16px;
+    --radius-pill: 999px;
+
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 40px;
+    --space-2xl: 64px;
+
+    --transition-fast: 160ms ease;
+    --transition-medium: 260ms ease;
+
+    --shadow-soft: 0 8px 24px rgba(17, 17, 17, 0.08);
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
 #room-bed {
 
     position: absolute;
@@ -50,7 +93,43 @@ body {
 
     width: 100%;
     height: 100%;
+    background: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    font-family: var(--font-interface);
+    font-size: 16px;
+    line-height: 1.4;
 
+}
+
+h1,
+h2,
+.world-title,
+.room-timer-title {
+    font-family: var(--font-editorial);
+    font-weight: 400;
+    line-height: 0.92;
+    letter-spacing: -0.04em;
+}
+
+button,
+select {
+    font-family: var(--font-interface);
+}
+
+button {
+    appearance: none;
+    cursor: pointer;
+    transition:
+        transform var(--transition-fast),
+        background-color var(--transition-fast),
+        border-color var(--transition-fast);
+}
+
+button:focus-visible,
+select:focus-visible,
+a:focus-visible {
+    outline: 2px solid var(--color-accent-lime);
+    outline-offset: 3px;
 }
 
 .world-page {
@@ -70,6 +149,8 @@ body {
 
     width: 100%;
     height: 100%;
+    color: var(--color-text-primary);
+    font-family: var(--font-interface);
 
     background-image: url('../images/dream-dorm.png');
     background-size: cover;
@@ -83,11 +164,7 @@ body {
     position: absolute;
     inset: 0;
 
-    background:
-    linear-gradient(
-        rgba(0,0,0,0.25),
-        rgba(0,0,0,0.35)
-    );
+    background: transparent;
 
     pointer-events: none;
 }
@@ -106,18 +183,19 @@ body {
 }
 
 .back-btn {
-    color: white;
+    color: var(--color-text-primary);
     text-decoration: none;
 
-    backdrop-filter: blur(10px);
+    backdrop-filter: none;
 
-    background: rgba(255,255,255,0.12);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-strong);
 
     padding: 12px 18px;
 
-    border-radius: 20px;
+    border-radius: var(--radius-pill);
 
-    font-family: Inter, sans-serif;
+    font-family: var(--font-interface);
 }
 
 .stats {
@@ -126,29 +204,30 @@ body {
 }
 
 .stat {
-    background: rgba(255,255,255,0.12);
+    background: var(--color-surface);
 
-    backdrop-filter: blur(12px);
+    backdrop-filter: none;
 
-    color: white;
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border-strong);
 
     padding: 12px 18px;
 
-    border-radius: 20px;
+    border-radius: var(--radius-pill);
 
-    font-family: Inter, sans-serif;
+    font-family: var(--font-interface);
 }
 
 .atmosphere-select {
     border: 0;
     outline: 0;
-    color: white;
+    color: var(--color-text-primary);
     background: transparent;
     font: inherit;
 }
 
 .atmosphere-select option {
-    color: #3d342d;
+    color: var(--color-text-primary);
 }
 
 .center-content {
@@ -166,13 +245,13 @@ body {
 
     z-index: 10;
 
-    color: white;
+    color: var(--color-text-primary);
 }
 
 .world-title {
     max-width: 900px;
     line-height: 0.95;
-    font-family: 'Cormorant Garamond', serif;
+    font-family: var(--font-editorial);
 
     font-size: clamp(42px, 6vw, 72px);
 
@@ -180,25 +259,26 @@ body {
 }
 
 .world-subtitle {
-    font-family: Inter, sans-serif;
+    font-family: var(--font-interface);
 
     font-size: 18px;
 
-    opacity: 0.95;
+    color: var(--color-text-secondary);
+    opacity: 1;
 
     margin-bottom: 36px;
 }
 
 .focus-btn {
-    border: none;
+    border: 1px solid var(--color-border-strong);
 
     padding: 18px 34px;
 
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
 
-    background: white;
+    background: var(--color-accent-lime);
 
-    color: #3d342d;
+    color: var(--color-text-primary);
 
     font-size: 16px;
 
@@ -206,11 +286,11 @@ body {
 
     cursor: pointer;
 
-    transition: 0.3s;
+    transition: transform var(--transition-fast), background-color var(--transition-fast);
 }
 
 .focus-btn:hover {
-    transform: translateY(-3px);
+    transform: translateY(-2px);
 }
 .session-list {
     display: flex;
@@ -221,31 +301,30 @@ body {
 }
 
 .session-card {
-    background: rgba(255,255,255,0.10);
-    border: 1px solid rgba(255,255,255,0.12);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-strong);
 
-    backdrop-filter: blur(18px);
+    backdrop-filter: none;
 
-    border-radius: 28px;
+    border-radius: var(--radius-medium);
 
     padding: 20px 24px;
 
-    color: white;
+    color: var(--color-text-primary);
 
-    font-family: Inter, sans-serif;
+    font-family: var(--font-interface);
 
     cursor: pointer;
 
-    transition: 0.3s;
+    transition: transform var(--transition-fast), background-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .session-card:hover {
-    transform: translateY(-4px) scale(1.02);
+    transform: translateY(-2px);
 
-    background: rgba(255,255,255,0.18);
+    background: var(--color-bg-secondary);
 
-    box-shadow:
-        0 12px 30px rgba(0,0,0,0.15);
+    box-shadow: var(--shadow-soft);
 }
 .session-title {
     letter-spacing: 0.2px;
@@ -258,13 +337,14 @@ body {
 .session-info {
     font-size: 14px;
 
-    opacity: 0.8;
+    color: var(--color-text-secondary);
+    opacity: 1;
 }
 .session-overlay {
     position: fixed;
     inset: 0;
 
-    background: rgba(0,0,0,0.18);
+    background: rgba(169,201,247,0.28);
 
     display: flex;
 
@@ -282,15 +362,17 @@ body {
 
     max-width: 90vw;
 
-    background: rgba(35,22,14,0.82);
+    background: var(--color-surface);
 
-    backdrop-filter: blur(20px);
+    backdrop-filter: none;
 
-    border-radius: 32px;
+    border: 1px solid var(--color-border-strong);
+
+    border-radius: var(--radius-medium);
 
     padding: 32px;
 
-    color: white;
+    color: var(--color-text-primary);
 }
 
 
@@ -307,11 +389,12 @@ body {
 
 .atmosphere-option {
 
-    background: rgba(255,255,255,0.08);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
 
     padding: 12px 16px;
 
-    border-radius: 14px;
+    border-radius: var(--radius-small);
 
     cursor: pointer;
 
@@ -320,13 +403,13 @@ body {
 
 .atmosphere-option:hover {
 
-    background: rgba(255,255,255,0.16);
+    background: var(--color-accent-lime);
 }
 
 .atmosphere-option.selected {
 
-    background: rgba(255,255,255,0.22);
-    border: 1px solid rgba(255,255,255,0.35);
+    background: var(--color-accent-lime);
+    border: 1px solid var(--color-border-strong);
 }
 
 .shop-grid {
@@ -339,16 +422,16 @@ body {
 .shop-item {
     overflow: hidden;
     border: 2px solid transparent;
-    border-radius: 14px;
-    background: rgba(255,255,255,0.08);
+    border-radius: var(--radius-small);
+    background: var(--color-surface);
     cursor: pointer;
-    transition: 0.2s;
+    transition: background-color var(--transition-fast), border-color var(--transition-fast);
 }
 
 .shop-item:hover,
 .shop-item.equipped {
-    border-color: rgba(255,255,255,0.8);
-    background: rgba(255,255,255,0.16);
+    border-color: var(--color-border-strong);
+    background: var(--color-bg-secondary);
 }
 
 .shop-item.locked {
@@ -385,16 +468,17 @@ body {
 .shop-item-price {
     margin-bottom: 10px;
     font-size: 13px;
-    opacity: 0.8;
+    color: var(--color-text-secondary);
+    opacity: 1;
 }
 
 .shop-item-button {
     width: 100%;
-    border: 0;
-    border-radius: 8px;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-small);
     padding: 9px 10px;
-    background: white;
-    color: #3d342d;
+    background: var(--color-accent-lime);
+    color: var(--color-text-primary);
     font: inherit;
     font-size: 13px;
     font-weight: 500;
@@ -403,6 +487,10 @@ body {
 
 .shop-item-button:disabled {
     cursor: not-allowed;
+}
+
+.shop-item-button:hover:not(:disabled) {
+    transform: translateY(-1px);
 }
 
 .snap-point {
@@ -458,7 +546,7 @@ body {
 
     max-width: none;
 
-    border-radius: 28px 28px 0 0;
+    border-radius: var(--radius-medium) var(--radius-medium) 0 0;
 
     padding: 20px;
 
@@ -497,27 +585,27 @@ body {
 
     width: min(320px, 85vw);
 
-    background: rgba(247,239,224,0.96);
+    background: var(--color-surface);
 
-    border: 1px solid rgba(120,90,60,0.15);
+    border: 1px solid var(--color-border-strong);
 
-    border-radius: 24px;
+    border-radius: var(--radius-medium);
 
     padding: 12px 14px;
 
     box-shadow:
-        0 10px 30px rgba(0,0,0,0.12);
+        var(--shadow-soft);
 
     z-index: 999;
 }
 
 .room-timer-title {
 
-    font-family: 'Cormorant Garamond', serif;
+    font-family: var(--font-editorial);
 
     font-size: 24px;
 
-    color: #4b392f;
+    color: var(--color-text-primary);
 
     margin-bottom: 10px;
 }
@@ -526,7 +614,7 @@ body {
 
     height: 10px;
 
-    background: rgba(90,70,50,0.12);
+    background: var(--color-bg-secondary);
 
     border-radius: 999px;
 
@@ -541,11 +629,7 @@ body {
 
     height: 100%;
 
-    background: linear-gradient(
-        90deg,
-        #caa97c,
-        #e3c89c
-    );
+    background: var(--color-accent-lime);
 
     border-radius: 999px;
 
@@ -554,11 +638,11 @@ body {
 
 #room-timer-text {
 
-    font-family: Inter, sans-serif;
+    font-family: var(--font-interface);
 
     font-size: 14px;
 
-    color: #6b5647;
+    color: var(--color-text-secondary);
 }
 </style>
 
@@ -760,23 +844,29 @@ const ATMOSPHERE_MODES = {
 class AudioManager {
     constructor(sourcePresets) {
         this.fadeMs = 2000;
+        this.crossfadeMs = 1800;
+        this.overlapSeconds = 2.5;
         this.currentMode = null;
-        this.currentAudio = null;
         this.transitionId = 0;
         this.presets = {};
 
         Object.entries(sourcePresets).forEach(([mode, preset]) => {
             this.presets[mode] = {
-                audio: this.createLoop(preset.src),
-                volume: preset.volume
+                players: [
+                    this.createPlayer(preset.src),
+                    this.createPlayer(preset.src)
+                ],
+                activeIndex: 0,
+                volume: preset.volume,
+                crossfadeStarted: false
             };
         });
     }
 
-    createLoop(src) {
+    createPlayer(src) {
         const audio = new Audio(src);
 
-        audio.loop = true;
+        audio.loop = false;
         audio.preload = "auto";
         audio.volume = 0;
         audio.load();
@@ -787,32 +877,84 @@ class AudioManager {
     setAtmosphere(mode) {
         const nextPreset = this.presets[mode];
 
-        if (!nextPreset || this.currentMode === mode) {
+        if (!nextPreset) {
             return;
         }
 
-        if (this.currentAudio) {
-            const transitionId = ++this.transitionId;
-            const previousAudio = this.currentAudio;
-
-            this.currentMode = mode;
-            this.currentAudio = null;
-
-            this.fadeOut(previousAudio, () => {
-                if (this.transitionId !== transitionId) {
-                    return;
-                }
-
-                this.currentAudio = nextPreset.audio;
-                this.fadeIn(nextPreset.audio, nextPreset.volume);
-            });
+        if (this.currentMode === mode && this.isPresetPlaying(nextPreset)) {
             return;
         }
 
         this.transitionId++;
+
+        if (this.currentMode && this.currentMode !== mode) {
+            this.stopPreset(this.presets[this.currentMode]);
+        }
+
         this.currentMode = mode;
-        this.currentAudio = nextPreset.audio;
-        this.fadeIn(nextPreset.audio, nextPreset.volume);
+        this.startPreset(nextPreset);
+    }
+
+    startPreset(preset) {
+        const activeAudio = preset.players[preset.activeIndex];
+
+        preset.crossfadeStarted = false;
+        activeAudio.currentTime = 0;
+        activeAudio.volume = 0;
+        this.fadeIn(activeAudio, preset.volume);
+        this.watchLoop(preset);
+    }
+
+    watchLoop(preset) {
+        const activeAudio = preset.players[preset.activeIndex];
+
+        activeAudio.ontimeupdate = () => {
+            if (
+                !activeAudio.duration ||
+                preset.crossfadeStarted ||
+                activeAudio.duration - activeAudio.currentTime > this.overlapSeconds
+            ) {
+                return;
+            }
+
+            preset.crossfadeStarted = true;
+            this.crossfadeToNextPlayer(preset);
+        };
+
+        activeAudio.onended = () => {
+            if (!preset.crossfadeStarted) {
+                this.crossfadeToNextPlayer(preset);
+            }
+        };
+    }
+
+    crossfadeToNextPlayer(preset) {
+        const currentAudio = preset.players[preset.activeIndex];
+        const nextIndex = preset.activeIndex === 0 ? 1 : 0;
+        const nextAudio = preset.players[nextIndex];
+
+        nextAudio.ontimeupdate = null;
+        nextAudio.onended = null;
+        nextAudio.currentTime = 0;
+        nextAudio.volume = 0;
+
+        nextAudio.play().then(() => {
+            currentAudio.ontimeupdate = null;
+            currentAudio.onended = null;
+            this.fade(nextAudio, 0, preset.volume, this.crossfadeMs);
+            this.fade(currentAudio, currentAudio.volume, 0, this.crossfadeMs, () => {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            });
+
+            preset.activeIndex = nextIndex;
+            preset.crossfadeStarted = false;
+            this.watchLoop(preset);
+        }).catch(() => {});
+    }
+
+    isPresetPlaying(preset) {
+        return preset.players.some((audio) => !audio.paused);
     }
 
     fadeIn(audio, targetVolume = 1) {
@@ -827,6 +969,8 @@ class AudioManager {
         this.fade(audio, audio.volume, 0, this.fadeMs, () => {
             audio.pause();
             audio.currentTime = 0;
+            audio.ontimeupdate = null;
+            audio.onended = null;
 
             if (onComplete) {
                 onComplete();
@@ -866,11 +1010,24 @@ class AudioManager {
         this.transitionId++;
 
         Object.values(this.presets).forEach((preset) => {
-            this.fadeOut(preset.audio);
+            this.stopPreset(preset);
         });
 
         this.currentMode = null;
-        this.currentAudio = null;
+    }
+
+    stopPreset(preset) {
+        if (!preset) {
+            return;
+        }
+
+        preset.crossfadeStarted = false;
+
+        preset.players.forEach((audio) => {
+            audio.ontimeupdate = null;
+            audio.onended = null;
+            this.fadeOut(audio);
+        });
     }
 }
 
