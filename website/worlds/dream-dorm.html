@@ -547,6 +547,7 @@ a:focus-visible {
     height: 28px;
     left: 50%;
     top: 50%;
+    z-index: 95;
     transform: translate(-50%, -50%);
     pointer-events: none;
 }
@@ -576,6 +577,7 @@ a:focus-visible {
     position: absolute;
     left: 50%;
     top: 50%;
+    z-index: 96;
     transform: translate(14px, 14px);
     padding: 6px 8px;
     border: 1px solid var(--color-border-strong);
@@ -594,6 +596,7 @@ a:focus-visible {
     position: absolute;
     width: 16px;
     height: 16px;
+    z-index: 94;
     transform: translate(-50%, -50%);
     border: 1px solid var(--color-border-strong);
     border-radius: 999px;
@@ -605,6 +608,93 @@ a:focus-visible {
     font-size: 10px;
     font-weight: 700;
     pointer-events: none;
+}
+
+.room-calibration-zone-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 90;
+    overflow: visible;
+    pointer-events: none;
+}
+
+.room-calibration-zone-polygon {
+    fill: rgba(132, 220, 255, 0.16);
+    stroke: rgba(132, 220, 255, 0.95);
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+}
+
+.room-calibration-point-label,
+.room-calibration-bed-anchor {
+    position: absolute;
+    z-index: 94;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.room-calibration-point-label {
+    width: 18px;
+    height: 18px;
+    border: 1px solid rgba(17, 17, 17, 0.65);
+    border-radius: 999px;
+    background: rgba(247, 250, 255, 0.82);
+    color: var(--color-text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.room-calibration-bed-anchor {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(17, 17, 17, 0.8);
+    border-radius: 999px;
+    background: rgba(232, 242, 74, 0.9);
+    box-shadow: 0 0 0 4px rgba(232, 242, 74, 0.2);
+}
+
+.room-calibration-bed-anchor::after {
+    content: attr(data-anchor-id);
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    transform: translate(-50%, 5px);
+    padding: 3px 6px;
+    border: 1px solid rgba(17, 17, 17, 0.45);
+    background: rgba(247, 250, 255, 0.88);
+    color: var(--color-text-primary);
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.room-calibration-bed-anchor.active {
+    transform: translate(-50%, -50%) scale(1.25);
+    border-color: rgba(132, 220, 255, 1);
+    background: rgba(132, 220, 255, 0.95);
+    box-shadow:
+        0 0 18px rgba(132, 220, 255, 0.65),
+        0 0 0 5px rgba(132, 220, 255, 0.22);
+}
+
+.room-calibration-bed-preview {
+    position: absolute;
+    display: block;
+    width: var(--bed-width);
+    height: auto;
+    object-fit: contain;
+    opacity: 0.52;
+    pointer-events: none;
+    background: transparent;
+    z-index: 92;
+    transform: translate(-50%, -18%) perspective(900px) rotate(var(--snap-rotation, 0deg)) rotateZ(-7deg) skewX(-3deg) scale(0.92);
+    transform-origin: 50% 18%;
+    filter: drop-shadow(0 8px 12px rgba(17, 17, 17, 0.18));
 }
 
 @media (max-width: 768px) {
@@ -1631,16 +1721,43 @@ function initRoomCalibration() {
     const overlay = document.createElement("div");
     const crosshair = document.createElement("div");
     const tooltip = document.createElement("div");
+    const bedPreview = document.createElement("img");
     let markerCount = 0;
+    let activeBedAnchor = null;
+    let selectedBedAnchor = null;
+
+    const BED_HEADBOARD_ZONE = [
+        { label: "1", x: 0.368, y: 0.529 },
+        { label: "2", x: 0.423, y: 0.520 },
+        { label: "4", x: 0.430, y: 0.691 },
+        { label: "3", x: 0.374, y: 0.704 }
+    ];
+
+    const BED_SNAP_ANCHORS = [
+        { id: "bed-left", x: 0.381, y: 0.612 },
+        { id: "bed-center", x: 0.399, y: 0.611 },
+        { id: "bed-right", x: 0.417, y: 0.609 }
+    ];
 
     overlay.id = "room-calibration-overlay";
     overlay.className = "room-calibration-overlay";
     crosshair.className = "room-calibration-crosshair";
     tooltip.className = "room-calibration-tooltip";
+    bedPreview.id = "room-calibration-bed-preview";
+    bedPreview.className = "room-calibration-bed-preview";
+    bedPreview.src = SHOP_ITEMS[0].image;
+    bedPreview.alt = "Calibration bed preview";
+    bedPreview.style.setProperty("--snap-rotation", "0deg");
 
+    renderHeadboardZone();
+    renderBedSnapAnchors();
+    overlay.appendChild(bedPreview);
     overlay.appendChild(crosshair);
     overlay.appendChild(tooltip);
     room.appendChild(overlay);
+
+    selectedBedAnchor = BED_SNAP_ANCHORS[1];
+    positionBedPreview(selectedBedAnchor);
 
     function clamp(value) {
         return Math.min(1, Math.max(0, value));
@@ -1676,9 +1793,56 @@ function initRoomCalibration() {
         };
     }
 
-    function updateCalibrationUi(coords) {
+    function renderHeadboardZone() {
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+
+        svg.classList.add("room-calibration-zone-svg");
+        svg.setAttribute("viewBox", "0 0 100 100");
+        svg.setAttribute("preserveAspectRatio", "none");
+        polygon.classList.add("room-calibration-zone-polygon");
+        polygon.setAttribute(
+            "points",
+            BED_HEADBOARD_ZONE.map((point) => {
+                return point.x * 100 + "," + point.y * 100;
+            }).join(" ")
+        );
+
+        svg.appendChild(polygon);
+        overlay.appendChild(svg);
+
+        BED_HEADBOARD_ZONE.forEach((point) => {
+            const label = document.createElement("div");
+
+            label.className = "room-calibration-point-label";
+            label.textContent = point.label;
+            label.style.left = point.x * 100 + "%";
+            label.style.top = point.y * 100 + "%";
+            overlay.appendChild(label);
+        });
+    }
+
+    function renderBedSnapAnchors() {
+        BED_SNAP_ANCHORS.forEach((anchor) => {
+            const marker = document.createElement("div");
+
+            marker.className = "room-calibration-bed-anchor";
+            marker.dataset.anchorId = anchor.id;
+            marker.style.left = anchor.x * 100 + "%";
+            marker.style.top = anchor.y * 100 + "%";
+            overlay.appendChild(marker);
+        });
+    }
+
+    function updateCalibrationUi(coords, nearestAnchor) {
         const left = coords.xPercent + "%";
         const top = coords.yPercent + "%";
+        const anchor = nearestAnchor || selectedBedAnchor;
+        const anchorText = anchor
+            ? "<br>anchor: " + anchor.id +
+                "<br>anchor x: " + anchor.x.toFixed(3) +
+                "<br>anchor y: " + anchor.y.toFixed(3)
+            : "";
 
         crosshair.style.left = left;
         crosshair.style.top = top;
@@ -1688,7 +1852,8 @@ function initRoomCalibration() {
             "x: " + coords.x.toFixed(3) + "<br>" +
             "y: " + coords.y.toFixed(3) + "<br>" +
             "x: " + coords.xPercent.toFixed(1) + "%<br>" +
-            "y: " + coords.yPercent.toFixed(1) + "%";
+            "y: " + coords.yPercent.toFixed(1) + "%" +
+            anchorText;
     }
 
     function isInteractiveTarget(event) {
@@ -1704,7 +1869,18 @@ function initRoomCalibration() {
             return;
         }
 
-        updateCalibrationUi(readRoomCoordinates(event));
+        const coords = readRoomCoordinates(event);
+        const nearestAnchor = findNearestBedAnchor(coords);
+
+        setActiveBedAnchor(nearestAnchor);
+
+        if (nearestAnchor) {
+            positionBedPreview(nearestAnchor);
+        } else if (selectedBedAnchor) {
+            positionBedPreview(selectedBedAnchor);
+        }
+
+        updateCalibrationUi(coords, nearestAnchor);
     }
 
     function markCalibrationPoint(event) {
@@ -1713,6 +1889,7 @@ function initRoomCalibration() {
         }
 
         const coords = readRoomCoordinates(event);
+        const nearestAnchor = findNearestBedAnchor(coords);
         const marker = document.createElement("div");
 
         markerCount += 1;
@@ -1722,7 +1899,18 @@ function initRoomCalibration() {
         marker.style.top = coords.yPercent + "%";
         overlay.appendChild(marker);
 
-        updateCalibrationUi(coords);
+        if (nearestAnchor) {
+            selectedBedAnchor = nearestAnchor;
+            positionBedPreview(nearestAnchor);
+
+            console.log(
+                "Selected bed anchor: " + nearestAnchor.id + "\n" +
+                "x: " + nearestAnchor.x.toFixed(3) + "\n" +
+                "y: " + nearestAnchor.y.toFixed(3)
+            );
+        }
+
+        updateCalibrationUi(coords, nearestAnchor);
 
         console.log(
             "Room coordinate:\n" +
@@ -1731,12 +1919,76 @@ function initRoomCalibration() {
         );
     }
 
+    function findNearestBedAnchor(coords) {
+        const roomRect = room.getBoundingClientRect();
+        let nearestAnchor = null;
+        let nearestDistance = Infinity;
+
+        BED_SNAP_ANCHORS.forEach((anchor) => {
+            const distance = Math.hypot(
+                (coords.x - anchor.x) * roomRect.width,
+                (coords.y - anchor.y) * roomRect.height
+            );
+
+            if (distance < nearestDistance) {
+                nearestDistance = distance;
+                nearestAnchor = anchor;
+            }
+        });
+
+        if (
+            nearestDistance <= 120 ||
+            isPointInPolygon(coords, BED_HEADBOARD_ZONE)
+        ) {
+            return nearestAnchor;
+        }
+
+        return null;
+    }
+
+    function isPointInPolygon(coords, polygon) {
+        let inside = false;
+
+        for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+            const xi = polygon[i].x;
+            const yi = polygon[i].y;
+            const xj = polygon[j].x;
+            const yj = polygon[j].y;
+            const intersects =
+                yi > coords.y !== yj > coords.y &&
+                coords.x < ((xj - xi) * (coords.y - yi)) / (yj - yi) + xi;
+
+            if (intersects) {
+                inside = !inside;
+            }
+        }
+
+        return inside;
+    }
+
+    function setActiveBedAnchor(anchor) {
+        activeBedAnchor = anchor;
+
+        overlay.querySelectorAll(".room-calibration-bed-anchor").forEach((marker) => {
+            marker.classList.toggle(
+                "active",
+                activeBedAnchor && marker.dataset.anchorId === activeBedAnchor.id
+            );
+        });
+    }
+
+    function positionBedPreview(anchor) {
+        bedPreview.style.left = anchor.x * 100 + "%";
+        bedPreview.style.top = anchor.y * 100 + "%";
+        bedPreview.dataset.anchorId = anchor.id;
+    }
+
     updateCalibrationUi({
         x: 0.5,
         y: 0.5,
         xPercent: 50,
         yPercent: 50
-    });
+    }, selectedBedAnchor);
 
     room.addEventListener("pointermove", moveCalibrationPointer);
     room.addEventListener("pointerdown", moveCalibrationPointer);
